@@ -15,7 +15,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 enum class Direction {
-    Left, Right, Up, Down
+    Left,
+    Right,
+    Up,
+    Down
 }
 
 @Composable
@@ -62,22 +65,22 @@ class SwipeableCardState(
     }
 
     /**
- * Swipes the card in the given [direction] with the given [animationSpec].
- *
- * @param direction the [Direction] to swipe in
- * @param animationSpec the [AnimationSpec] to use for the swipe animation
- */
-suspend fun swipe(direction: Direction, animationSpec: AnimationSpec<Offset> = tween(400)) {
-    val endX = maxWidth * 1.5f
-    val endY = maxHeight
-    when (direction) {
-        Direction.Left -> offset.animateTo(offset(x = -endX), animationSpec)
-        Direction.Right -> offset.animateTo(offset(x = endX), animationSpec)
-        Direction.Up -> offset.animateTo(offset(y = -endY), animationSpec)
-        Direction.Down -> offset.animateTo(offset(y = endY), animationSpec)
+     * Swipes the card in the given [direction] with the given [animationSpec].
+     *
+     * @param direction the [Direction] to swipe in
+     * @param animationSpec the [AnimationSpec] to use for the swipe animation
+     */
+    suspend fun swipe(direction: Direction, animationSpec: AnimationSpec<Offset> = tween(400)) {
+        val endX = maxWidth * 1.5f
+        val endY = maxHeight
+        when (direction) {
+            Direction.Left -> offset.animateTo(offset(x = -endX), animationSpec)
+            Direction.Right -> offset.animateTo(offset(x = endX), animationSpec)
+            Direction.Up -> offset.animateTo(offset(y = -endY), animationSpec)
+            Direction.Down -> offset.animateTo(offset(y = endY), animationSpec)
+        }
+        this.swipedDirection = direction
     }
-    this.swipedDirection = direction
-}
 
     private fun offset(x: Float = offset.value.x, y: Float = offset.value.y): Offset {
         return Offset(x, y)

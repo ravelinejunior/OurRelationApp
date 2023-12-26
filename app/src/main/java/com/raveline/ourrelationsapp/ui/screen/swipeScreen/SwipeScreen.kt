@@ -40,11 +40,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.raveline.ourrelationsapp.R
 import com.raveline.ourrelationsapp.ui.common.components.Direction
 import com.raveline.ourrelationsapp.ui.common.components.rememberSwipeableCardState
 import com.raveline.ourrelationsapp.ui.common.components.swipableCard
@@ -54,22 +56,15 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SwipeCards() {
-    /**
-     * Sets the system bars color to transparent.
-     */
     TransparentSystemBars()
-
-    /**
-     * Creates a vertical gradient background with colors f68084 and a6c0fe.
-     */
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color(0xfff68084),
-                        Color(0xffa6c0fe),
+                        Color(0xFFEC454B),
+                        Color(0xFF2979FF),
                     )
                 )
             )
@@ -78,47 +73,25 @@ fun SwipeCards() {
          * A composable that contains a swipeable card and buttons to control it.
          */
         Box {
-            /**
-             * A list of [MatchProfile]s and their corresponding [rememberSwipeableCardState]s.
-             */
             val states = profiles.reversed()
                 .map { it to rememberSwipeableCardState() }
 
-            /**
-             * A mutable state variable that holds the hint text to be displayed.
-             */
             var hint by remember {
                 mutableStateOf("Swipe a card or press a button below")
             }
 
-            /**
-             * Renders a text with the given hint text and alignment.
-             */
-            Hint(hint)
-
-            /**
-             * A coroutine scope used to launch coroutines.
-             */
             val scope = rememberCoroutineScope()
 
-            /**
-             * A composable that contains a swipeable card and buttons to control it.
-             */
+            Hint(hint)
+
             Box(
                 Modifier
                     .padding(24.dp)
                     .fillMaxSize()
-                    .aspectRatio(1f)
+                    .aspectRatio(0.65f)
                     .align(Alignment.Center)
             ) {
-                /**
-                 * Loops through the list of [MatchProfile]s and their corresponding [rememberSwipeableCardState]s,
-                 * rendering a [ProfileCard] for each item.
-                 */
                 states.forEach { (matchProfile, state) ->
-                    /**
-                     * If the swiped direction of the card is null, render a [ProfileCard].
-                     */
                     if (state.swipedDirection == null) {
                         ProfileCard(
                             modifier = Modifier
@@ -140,9 +113,6 @@ fun SwipeCards() {
                         )
                     }
 
-                    /**
-                     * Launches an effect that updates the hint text based on the swiped direction of the card.
-                     */
                     LaunchedEffect(matchProfile, state.swipedDirection) {
                         if (state.swipedDirection != null) {
                             hint = "You swiped ${stringFrom(state.swipedDirection!!)}"
@@ -151,9 +121,6 @@ fun SwipeCards() {
                 }
             }
 
-            /**
-             * Renders two [CircleButton]s, one for swiping left and one for swiping right.
-             */
             Row(
                 Modifier
                     .align(Alignment.BottomCenter)
@@ -161,9 +128,7 @@ fun SwipeCards() {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                /**
-                 * Renders a [CircleButton] with an icon for swiping left.
-                 */
+
                 CircleButton(
                     onClick = {
                         scope.launch {
@@ -180,9 +145,6 @@ fun SwipeCards() {
                     icon = Icons.Rounded.Close
                 )
 
-                /**
-                 * Renders a [CircleButton] with an icon for swiping right.
-                 */
                 CircleButton(
                     onClick = {
                         scope.launch {
@@ -204,17 +166,18 @@ fun SwipeCards() {
     }
 }
 
+/**
+ * Renders an icon button with a circle shape, primary color as background, and the given icon.
+ *
+ * @param onClick a lambda that is invoked when the button is clicked
+ * @param icon the icon to display in the button
+ */
 @Composable
 private fun CircleButton(
     onClick: () -> Unit,
     icon: ImageVector,
 ) {
-    /**
-     * Renders an icon button with a circle shape, primary color as background, and the given icon.
-     *
-     * @param onClick a lambda that is invoked when the button is clicked
-     * @param icon the icon to display in the button
-     */
+
     IconButton(
         modifier = Modifier
             .clip(CircleShape)
@@ -224,74 +187,74 @@ private fun CircleButton(
         onClick = onClick
     ) {
         Icon(
-            icon, null,
-            tint = MaterialTheme.colorScheme.onPrimary
+            icon,
+            null,
+            tint = MaterialTheme.colorScheme.onPrimary,
         )
     }
 }
 
+/**
+ * Renders a [Card] containing an [Image] of the [MatchProfile] and their name.
+ *
+ * @param modifier the [Modifier] to apply to the card
+ * @param matchProfile the [MatchProfile] to render
+ * Renders an [Image] of the [MatchProfile] using the provided [painterResource] and [ContentScale].
+ *
+ * @param contentScale the [ContentScale] to use when resizing the image
+ * @param modifier the [Modifier] to apply to the image
+ * @param painter the [painterResource] to use to draw the image
+ * @param contentDescription an optional [String] used by accessibility services to provide an accessible name for the image
+ *
+ * Renders a [Text] of the [MatchProfile.name] using the provided [MaterialTheme.colorScheme.onPrimary],
+ * [FontWeight.Medium], and [fontSize] properties.
+ *                  *
+ * @param text the [String] to render as text
+ * @param color the [Color] to use when painting the text
+ * @param fontSize the [Sp] size of the text
+ * @param fontWeight the [FontWeight] to use when drawing the text
+ * @param modifier the [Modifier] to apply to the text
+ */
 @Composable
 private fun ProfileCard(
     modifier: Modifier,
     matchProfile: MatchProfile,
 ) {
-    /**
-     * Renders a [Card] containing an [Image] of the [MatchProfile] and their name.
-     *
-     * @param modifier the [Modifier] to apply to the card
-     * @param matchProfile the [MatchProfile] to render
-     */
     Card(modifier) {
         Box {
-            /**
-             * Renders an [Image] of the [MatchProfile] using the provided [painterResource] and [ContentScale].
-             *
-             * @param contentScale the [ContentScale] to use when resizing the image
-             * @param modifier the [Modifier] to apply to the image
-             * @param painter the [painterResource] to use to draw the image
-             * @param contentDescription an optional [String] used by accessibility services to provide an accessible name for the image
-             */
             Image(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
                 painter = painterResource(matchProfile.drawableResId),
-                contentDescription = null
+                contentDescription = stringResource(id = R.string.profile)
             )
             Scrim(Modifier.align(Alignment.BottomCenter))
-            Column(Modifier.align(Alignment.BottomStart)) {
-                /**
-                 * Renders a [Text] of the [MatchProfile.name] using the provided [MaterialTheme.colorScheme.onPrimary], [FontWeight.Medium], and [fontSize] properties.
-                 *
-                 * @param text the [String] to render as text
-                 * @param color the [Color] to use when painting the text
-                 * @param fontSize the [Sp] size of the text
-                 * @param fontWeight the [FontWeight] to use when drawing the text
-                 * @param modifier the [Modifier] to apply to the text
-                 */
+            Column(Modifier.align(Alignment.BottomCenter)) {
                 Text(
                     text = matchProfile.name,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 22.sp,
+                    color = Color.White,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(8.dp)
                 )
             }
         }
     }
 }
 
+
+/**
+ * Renders a text with the given [text] and [textAlign] properties.
+ *
+ * @param text the text to display
+ * @param color the color of the text
+ * @param fontWeight the font weight of the text
+ * @param fontSize the font size of the text
+ * @param textAlign the alignment of the text
+ * @param modifier the modifier to apply to the text
+ */
 @Composable
 private fun Hint(text: String) {
-    /**
-     * Renders a text with the given [text] and [textAlign] properties.
-     *
-     * @param text the text to display
-     * @param color the color of the text
-     * @param fontWeight the font weight of the text
-     * @param fontSize the font size of the text
-     * @param textAlign the alignment of the text
-     * @param modifier the modifier to apply to the text
-     */
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -300,39 +263,42 @@ private fun Hint(text: String) {
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = Color.White,
             fontWeight = FontWeight.Bold,
-            fontSize = 22.sp,
+            fontSize = 24.sp,
             textAlign = TextAlign.Center
         )
     }
 }
 
+/**
+ * Creates a [DisposableEffect] that sets the system bars color to transparent.
+ *
+ * @param systemUiController the [rememberSystemUiController] to use
+ * @param useDarkIcons whether to use dark icons in the system bars
+ * Sets the system bars color to transparent using the provided [systemUiController].
+ *
+ * @param color the color to set the system bars to
+ * @param darkIcons whether to use dark icons in the system bars
+ * @param isNavigationBarContrastEnforced whether to enforce contrast in the navigation bar
+ */
 @Composable
 private fun TransparentSystemBars() {
-    /**
-     * Creates a [DisposableEffect] that sets the system bars color to transparent.
-     *
-     * @param systemUiController the [rememberSystemUiController] to use
-     * @param useDarkIcons whether to use dark icons in the system bars
-     */
+
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = false
 
-    /**
-     * Sets the system bars color to transparent using the provided [systemUiController].
-     *
-     * @param color the color to set the system bars to
-     * @param darkIcons whether to use dark icons in the system bars
-     * @param isNavigationBarContrastEnforced whether to enforce contrast in the navigation bar
-     */
     DisposableEffect(systemUiController, useDarkIcons) {
 
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
             darkIcons = useDarkIcons,
-            isNavigationBarContrastEnforced = false
+            isNavigationBarContrastEnforced = false,
         )
+        // systemUiController.isStatusBarVisible = false // Status bar
+        //systemUiController.isNavigationBarVisible = false // Navigation bar
+        //systemUiController.isSystemBarsVisible = false // Status & Navigation bars
+        //systemUiController.navigationBarDarkContentEnabled = false
         onDispose {}
     }
 }

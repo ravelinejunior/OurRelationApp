@@ -134,8 +134,10 @@ fun Offset.coerceIn(
 }
 
 /**
- * Returns `true` if the absolute value of the x-coordinate of the given [offset] is less than the half of the maximum width of the given [state], and the absolute value of the y-coordinate of the given [offset] is less than the half of the maximum height of the given [state].
- *
+ * Returns `true` if the absolute value of the x-coordinate of the given [offset]
+ * is less than the half of the maximum width of the given [state],
+ * and the absolute value of the y-coordinate of the given [offset]
+ * is less than the half of the maximum height of the given [state].
  * @param state the [SwipeableCardState] to check the travel distance against.
  * @param offset the [Offset] to check the travel distance against.
  * @return `true` if the given [offset] has not travelled enough, `false` otherwise.
