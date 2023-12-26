@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 
+const val signupNavigationRoute = "SignupRoute"
+
 @Composable
 fun SignupScreen() {
     Surface {

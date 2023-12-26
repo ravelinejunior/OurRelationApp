@@ -43,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -55,6 +56,11 @@ import com.raveline.ourrelationsapp.ui.data.models.profiles
 import kotlinx.coroutines.launch
 
 @Composable
+fun SwipeScreen() {
+    SwipeCards()
+}
+
+@Composable
 fun SwipeCards() {
     TransparentSystemBars()
     Box(
@@ -65,6 +71,9 @@ fun SwipeCards() {
                     listOf(
                         Color(0xFFEC454B),
                         Color(0xFF2979FF),
+                        Color.Black,
+                        Color(0xFF2979FF),
+
                     )
                 )
             )
@@ -166,6 +175,12 @@ fun SwipeCards() {
     }
 }
 
+@Preview
+@Composable
+fun PreviewSwipeCards() {
+    SwipeCards()
+}
+
 /**
  * Renders an icon button with a circle shape, primary color as background, and the given icon.
  *
@@ -181,17 +196,23 @@ private fun CircleButton(
     IconButton(
         modifier = Modifier
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(color = MaterialTheme.colorScheme.onPrimary)
             .size(56.dp)
-            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
+            .border(2.dp, MaterialTheme.colorScheme.onPrimary, CircleShape),
         onClick = onClick
     ) {
         Icon(
             icon,
             null,
-            tint = MaterialTheme.colorScheme.onPrimary,
+            tint = MaterialTheme.colorScheme.tertiary,
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PrevCircleButton() {
+    CircleButton(onClick = { /*TODO*/ }, icon = Icons.Rounded.Favorite)
 }
 
 /**

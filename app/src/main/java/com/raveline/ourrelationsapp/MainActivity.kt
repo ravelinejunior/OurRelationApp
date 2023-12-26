@@ -1,5 +1,6 @@
 package com.raveline.ourrelationsapp
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeCards
+import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeScreen
 import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SwipeCards()
+                    SwipeScreen()
                 }
             }
         }
@@ -31,9 +33,10 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 fun GreetingPreview() {
     OurRelationsAppTheme {
+        SwipeScreen()
     }
 }
