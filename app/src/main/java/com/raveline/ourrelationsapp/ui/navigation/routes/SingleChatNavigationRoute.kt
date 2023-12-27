@@ -10,7 +10,7 @@ const val singleChatNavigationRoute = "SingleChatRoute"
 
 fun NavGraphBuilder.singleChatNavigationRoute() {
     composable(singleChatNavigationRoute) {
-        SingleChatScreen()
+        SingleChatScreen(chatId = "")
     }
 }
 

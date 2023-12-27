@@ -9,17 +9,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 
-const val singleChatNavigationRoute = "SingleChatRoute"
 
 @Composable
-fun SingleChatScreen() {
+fun SingleChatScreen(chatId:String) {
     Surface {
-        SingleChatScreenContent()
+        SingleChatScreenContent(chatId)
     }
 }
 
 @Composable
-fun SingleChatScreenContent() {
+fun SingleChatScreenContent(chatId:String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -34,5 +33,5 @@ fun SingleChatScreenContent() {
 @Preview
 @Composable
 fun SingleChatScreenPreview() {
-    SingleChatScreen()
+    SingleChatScreen("")
 }

@@ -52,13 +52,13 @@ android {
 }
 
 dependencies {
-
     //Lottie
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
 
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.26.1-alpha")
 
-    implementation ("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    api("androidx.navigation:navigation-fragment-ktx:2.7.6")
 
     implementation ("com.google.firebase:firebase-auth:22.3.0")
     implementation (platform("com.google.firebase:firebase-bom:32.7.0"))
@@ -83,6 +83,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation ("androidx.compose.material:material-icons-extended")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
