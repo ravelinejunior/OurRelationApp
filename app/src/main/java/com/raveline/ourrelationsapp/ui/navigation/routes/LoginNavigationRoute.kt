@@ -1,5 +1,6 @@
 package com.raveline.ourrelationsapp.ui.navigation.routes
 
+import androidx.activity.ComponentActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -10,7 +11,7 @@ const val loginNavigationRoute = "LoginRoute"
 
 fun NavGraphBuilder.loginNavigationRoute() {
     composable(loginNavigationRoute) {
-        LoginScreen()
+        LoginScreen(ComponentActivity())
     }
 }
 

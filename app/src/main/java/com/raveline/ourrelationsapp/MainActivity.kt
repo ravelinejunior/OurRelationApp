@@ -35,9 +35,11 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsAppBar
 import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeScreen
 import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG: String = MainActivity::class.java.simpleName
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +59,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun OurRelationsApp(
-    navController: NavHostController = rememberNavController()) {
+    navController: NavHostController = rememberNavController()
+) {
     // See the change in navigation
     LaunchedEffect(Unit) {
         navController.addOnDestinationChangedListener { _, _, _ ->

@@ -4,13 +4,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupScreen
+import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupScreenClass
 
 const val signupNavigationRoute = "SignupRoute"
 
 fun NavGraphBuilder.signupRoute() {
     composable(signupNavigationRoute) {
-        SignupScreen()
+        SignupScreenClass()
     }
 }
 

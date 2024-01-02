@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id ("kotlin-kapt")
     id ("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -52,6 +53,12 @@ android {
 }
 
 dependencies {
+
+    //ExoPlayer
+    implementation ("com.google.accompanist:accompanist-insets:0.23.1")
+    implementation ("com.google.android.exoplayer:exoplayer-core:2.17.1")
+    implementation ("com.google.android.exoplayer:exoplayer-ui:2.17.1")
+
     //Lottie
     implementation ("com.airbnb.android:lottie-compose:6.1.0")
 
@@ -66,10 +73,10 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx")
     implementation ("com.google.firebase:firebase-storage-ktx")
 
-    implementation ("com.google.dagger:hilt-android:2.49")
+    implementation ("com.google.dagger:hilt-android:2.48")
     implementation ("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation ("com.google.firebase:firebase-firestore:24.10.0")
-    kapt ("com.google.dagger:hilt-android-compiler:2.42")
+    kapt ("com.google.dagger:hilt-android-compiler:2.48")
 
     implementation ("io.coil-kt:coil-compose:2.4.0")
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "775249719329",
+    "project_id": "ourrelationsapp",
+    "storage_bucket": "ourrelationsapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:775249719329:android:39e898411cc7a3ff373360",
+        "android_client_info": {
+          "package_name": "com.raveline.ourrelationsapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkArLmuyN4_HtvphiL2CUd97n8j_zz0Gw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

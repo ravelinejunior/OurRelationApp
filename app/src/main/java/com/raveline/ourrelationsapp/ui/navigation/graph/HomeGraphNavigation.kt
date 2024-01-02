@@ -12,6 +12,7 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToChatList
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToProfile
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
 import com.raveline.ourrelationsapp.ui.navigation.routes.profileNavigationRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.signupNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.signupRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.singleChatNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
@@ -21,11 +22,9 @@ const val homeGraphRoute = "HomeGraph"
 
 fun NavGraphBuilder.homeGraph() {
     navigation(
-        startDestination = swipeNavigationRoute,
+        startDestination = signupNavigationRoute,
         route = homeGraphRoute
     ) {
-        loginNavigationRoute()
-        signupRoute()
         chatListRoute()
         profileNavigationRoute()
         singleChatNavigationRoute()
