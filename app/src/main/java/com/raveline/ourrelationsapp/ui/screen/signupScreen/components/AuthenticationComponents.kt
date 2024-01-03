@@ -43,14 +43,18 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 fun TextInput(
     inputType: InputType,
     focusRequester: FocusRequester? = null,
-    keyboardActions: KeyboardActions
+    keyboardActions: KeyboardActions,
+    textValue: (String) -> Unit
 ) {
 
     var value by remember { mutableStateOf("") }
 
     OutlinedTextField(
         value = value,
-        onValueChange = { value = it },
+        onValueChange = {
+            value = it
+            textValue(value)
+        },
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester ?: FocusRequester()),
