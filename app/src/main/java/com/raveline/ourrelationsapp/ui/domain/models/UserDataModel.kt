@@ -1,4 +1,4 @@
-package com.raveline.ourrelationsapp.ui.data.models
+package com.raveline.ourrelationsapp.ui.domain.models
 
 data class UserDataModel(
     var userId: String? = "",
@@ -6,6 +6,7 @@ data class UserDataModel(
     var userName: String? = "",
     var imageUrl: String? = "",
     var email: String? = "",
+    var password: String? = "",
     var bio: String? = "",
 
     ) {
@@ -15,6 +16,7 @@ data class UserDataModel(
         "userName" to userName,
         "imageUrl" to imageUrl,
         "email" to email,
+        "password" to password,
         "bio" to bio,
     )
 }

@@ -1,4 +1,4 @@
-package com.raveline.ourrelationsapp.ui.data.models
+package com.raveline.ourrelationsapp.ui.domain.models
 
 import androidx.annotation.DrawableRes
 import com.raveline.ourrelationsapp.R

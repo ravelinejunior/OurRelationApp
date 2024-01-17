@@ -6,7 +6,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
-import com.raveline.ourrelationsapp.ui.data.interfaces.ExperimentalSwipeableCardApi
+import com.raveline.ourrelationsapp.ui.domain.interfaces.ExperimentalSwipeableCardApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs

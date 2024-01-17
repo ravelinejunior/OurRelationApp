@@ -1,4 +1,4 @@
-package com.raveline.ourrelationsapp.ui.data.state
+package com.raveline.ourrelationsapp.ui.domain.state
 
 open class StateEvent<out T> (private val content:T){
     var hasBeenHandled = false

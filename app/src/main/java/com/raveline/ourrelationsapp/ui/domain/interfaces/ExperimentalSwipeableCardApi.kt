@@ -1,4 +1,4 @@
-package com.raveline.ourrelationsapp.ui.data.interfaces
+package com.raveline.ourrelationsapp.ui.domain.interfaces
 
 /**
  * An annotation used to indicate that the annotated element is part of an experimental API that may change or be removed in the future.

@@ -3,20 +3,20 @@ package com.raveline.ourrelationsapp.ui.viewmodel
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
-import com.raveline.ourrelationsapp.ui.common.utils.userNameFirebaseKey
-import com.raveline.ourrelationsapp.ui.data.state.StateEvent
+import androidx.lifecycle.viewModelScope
+import com.raveline.ourrelationsapp.ui.common.utils.decryptString
+import com.raveline.ourrelationsapp.ui.common.utils.encryptString
+import com.raveline.ourrelationsapp.ui.common.utils.encryptionKey
+import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
+import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class OurRelationsViewModel @Inject constructor(
-    private val firebaseAuthentication: FirebaseAuth,
-    private val fireStoreDatabase: FirebaseFirestore,
-    private val storage: FirebaseStorage
+    private val authenticationUseCaseModel: AuthenticationUseCaseModel
 ) : ViewModel() {
 
     private val TAG = "OurRelationsViewModel"
@@ -32,26 +32,44 @@ class OurRelationsViewModel @Inject constructor(
             return
         }
 
-        fireStoreDatabase.collection(userFirebaseDatabaseCollection)
-            .whereEqualTo(userNameFirebaseKey, userName)
-            .get()
-            .addOnSuccessListener { task ->
-                if (task.isEmpty) {
-                    firebaseAuthentication.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { compTask ->
-                            inProgress.value = false
-                            if (compTask.isSuccessful) {
-                                popUpNotification.value =
-                                    StateEvent(compTask.result.user?.email.toString() + " Created")
-                            } else {
-                                handleException(compTask.exception, "Signup Failed")
-                            }
-                        }
+        viewModelScope.launch {
+            val singUpUserComplete =
+                authenticationUseCaseModel.signUpUseCase.invoke(userName, email, password)
+            if (singUpUserComplete.first) {
+                val encrypt = encryptString(password, encryptionKey)
+                val userStored = createOrUpdateProfile(
+                    name = userName,
+                    password = encrypt
+                )
+
+                if (userStored.first) {
+                    // user created
+                } else {
+                    handleException(customMessage = userStored.second)
                 }
-            }.addOnFailureListener { e ->
                 inProgress.value = false
-                handleException(e)
+            } else {
+                handleException(customMessage = singUpUserComplete.second)
+                inProgress.value = false
             }
+        }
+
+
+    }
+
+    private suspend fun createOrUpdateProfile(
+        name: String? = null,
+        email: String? = null,
+        bio: String? = null,
+        imageUrl: String? = null,
+        password: String,
+    ): Pair<Boolean, String> {
+        val encryptedPassword = encryptString(password, encryptionKey)
+        val result = authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
+            name, email, bio, imageUrl, encryptedPassword
+        )
+
+        return viewModelScope.async { result }.await()
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {
