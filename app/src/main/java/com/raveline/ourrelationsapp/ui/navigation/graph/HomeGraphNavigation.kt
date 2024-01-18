@@ -22,7 +22,7 @@ const val homeGraphRoute = "HomeGraph"
 
 fun NavGraphBuilder.homeGraph() {
     navigation(
-        startDestination = signupNavigationRoute,
+        startDestination = swipeNavigationRoute,
         route = homeGraphRoute
     ) {
         chatListRoute()

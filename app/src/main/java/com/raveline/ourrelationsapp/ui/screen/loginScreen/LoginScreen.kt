@@ -195,8 +195,8 @@ fun LoginScreenContent(videoUri: Uri, componentActivity: ComponentActivity) {
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.onTertiary,
-                        contentColor = MaterialTheme.colorScheme.tertiary
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
                     )
                 ) {
                     Text("LOGIN", Modifier.padding(vertical = 8.dp))
@@ -220,8 +220,8 @@ fun LoginScreenContent(videoUri: Uri, componentActivity: ComponentActivity) {
                             navigateBack(componentActivity, focusManager)
                         },
                         colors = ButtonDefaults.textButtonColors(
-                            containerColor = MaterialTheme.colorScheme.onTertiary,
-                            contentColor = MaterialTheme.colorScheme.tertiary
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.onBackground
                         )
                     ) {
                         Text("SING UP")

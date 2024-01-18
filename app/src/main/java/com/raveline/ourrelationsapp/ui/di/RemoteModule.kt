@@ -24,15 +24,12 @@ import javax.inject.Singleton
 object RemoteModule {
 
     @Provides
-    @Singleton
     fun providesFirebaseAuthentication(): FirebaseAuth = Firebase.auth
 
     @Provides
-    @Singleton
     fun providesFireStoreDatabase(): FirebaseFirestore = Firebase.firestore
 
     @Provides
-    @Singleton
     fun providesStorage(): FirebaseStorage = Firebase.storage
 
     @Provides
@@ -47,11 +44,15 @@ object RemoteModule {
     @Provides
     @Singleton
     fun provideAuthenticationUseCaseModel(
-        repository: UserAuthenticationRepository
+        repository: UserAuthenticationRepository,
+        firebaseAuthentication: FirebaseAuth,
+        fireStoreDatabase: FirebaseFirestore
     ): AuthenticationUseCaseModel =
         AuthenticationUseCaseModel(
             SignInUseCase(repository),
             SignUpUseCase(repository),
             CreateOrUpdateUserUseCase(repository),
+            firebaseAuthentication,
+            fireStoreDatabase
         )
 }

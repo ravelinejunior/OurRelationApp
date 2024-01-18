@@ -31,8 +31,8 @@ fun OurRelationsAppTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> highContrastDarkColorScheme
-        else -> highContrastLightColorScheme
+        darkTheme -> darkScheme
+        else -> lightScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {

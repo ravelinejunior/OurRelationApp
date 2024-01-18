@@ -7,6 +7,7 @@ import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollecti
 import com.raveline.ourrelationsapp.ui.common.utils.userNameFirebaseKey
 import com.raveline.ourrelationsapp.ui.domain.interfaces.UserAuthenticationRepository
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -30,21 +31,24 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
                     if (docs.isEmpty) {
                         firebaseAuthentication.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener {
-                                if(it.isSuccessful){
+                                if (it.isSuccessful) {
                                     continuation.resume(
                                         Pair(
                                             true,
                                             "User successfully created"
                                         )
                                     )
-                                }else{
-                                    Log.i(TAG, "User already exists")
-                                    continuation.resume(Pair(false, it.exception?.message.toString()))
+                                } else {
+                                    continuation.resume(
+                                        Pair(
+                                            false,
+                                            it.exception?.message.toString()
+                                        )
+                                    )
                                 }
                             }
                     } else {
                         // User already exists
-                        Log.i(TAG, "User already exists")
                         continuation.resume((Pair(false, "User already exists")))
                     }
                 }.addOnFailureListener { e ->
@@ -144,8 +148,8 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
                     )
                 }
         }
-    }
 
+    }
 }
 
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -34,9 +35,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,11 +56,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.raveline.ourrelationsapp.MainActivity
 import com.raveline.ourrelationsapp.R
 import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
-import com.raveline.ourrelationsapp.ui.common.components.NotificationMessage
 import com.raveline.ourrelationsapp.ui.screen.loginScreen.LoginScreenClass
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
@@ -67,6 +71,8 @@ import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
 import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 const val signupNavigationRoute = "SignupRoute"
 
@@ -75,8 +81,20 @@ class SignupScreenClass : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val viewModel = hiltViewModel<OurRelationsViewModel>()
+            observeUser(viewModel)
             OurRelationsAppTheme {
                 SignupScreen()
+            }
+        }
+    }
+
+    private fun observeUser(viewModel: OurRelationsViewModel) {
+        lifecycleScope.launch {
+            viewModel.userState.collect { user ->
+                if (user != null) {
+                    navigateToMain(this@SignupScreenClass)
+                }
             }
         }
     }
@@ -99,6 +117,10 @@ class SignupScreenClass : ComponentActivity() {
         val exoPlayer = remember {
             context.buildExoPlayer(videoUri)
         }
+        val viewModel = hiltViewModel<OurRelationsViewModel>()
+        val scrollableState = rememberScrollState()
+        val isLoading = viewModel.inProgress.value
+        val coroutineScope = rememberCoroutineScope()
 
         var userName by remember {
             mutableStateOf("")
@@ -123,11 +145,25 @@ class SignupScreenClass : ComponentActivity() {
             }
         }
 
-        ProvideWindowInsets {
-            val scrollableState = rememberScrollState()
-            val viewModel = hiltViewModel<OurRelationsViewModel>()
-            val isLoading = viewModel.inProgress.value
+        LaunchedEffect(viewModel.inProgress) {
+            if (viewModel.inProgress.value) {
+                coroutineScope.launch {
+                    delay(4000)
+                    viewModel.inProgress.value = false
+                    delay(1000)
+                    Toast.makeText(context, "Something is not right. Try again", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
 
+        LaunchedEffect(viewModel.userState){
+            if (viewModel.userState.value != null){
+                navigateToMain(this@SignupScreenClass)
+            }
+        }
+
+        ProvideWindowInsets {
 
             Box(
                 modifier = Modifier
@@ -232,11 +268,14 @@ class SignupScreenClass : ComponentActivity() {
                             onClick = {
                                 focusManager.clearFocus()
                                 viewModel.onSignup(userName, userEmail, userPassword)
+                                coroutineScope.launch {
+                                    viewModel.isUserLoggedIn()
+                                }
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.onTertiary,
-                                contentColor = MaterialTheme.colorScheme.tertiary
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground
                             )
                         ) {
                             Text("SIGNUP", Modifier.padding(vertical = 8.dp))
@@ -260,8 +299,8 @@ class SignupScreenClass : ComponentActivity() {
                                     navigateBack(this@SignupScreenClass, focusManager)
                                 },
                                 colors = ButtonDefaults.textButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.onTertiary,
-                                    contentColor = MaterialTheme.colorScheme.tertiary
+                                    containerColor = MaterialTheme.colorScheme.background,
+                                    contentColor = MaterialTheme.colorScheme.onBackground
                                 )
                             ) {
                                 Text("SING IN")
@@ -274,7 +313,6 @@ class SignupScreenClass : ComponentActivity() {
                     CommonProgressSpinner()
                 }
 
-                NotificationMessage(viewModel = viewModel)
             }
         }
     }
@@ -292,6 +330,18 @@ class SignupScreenClass : ComponentActivity() {
         componentActivity.startActivity(intent)
     }
 
+    private fun navigateToMain(
+        componentActivity: ComponentActivity,
+    ) {
+        val intent = Intent(
+            componentActivity.applicationContext,
+            MainActivity::class.java
+        )
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        componentActivity.startActivity(intent)
+    }
+
+    @SuppressLint("DiscouragedApi")
     private fun getVideoUri(): Uri {
         val rawId = resources.getIdentifier("clouds", "raw", packageName)
         val videoUri = "android.resource://${packageName}/$rawId"
