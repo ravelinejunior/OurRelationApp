@@ -1,32 +1,36 @@
 package com.raveline.ourrelationsapp.ui.navigation.routes
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.MailOutline
-import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PersonOutline
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class OurRelationsAppBarItem (
-    val label:String,
-    val icon:ImageVector,
-    val destination:String
-){
-    object ProfileItemBar : OurRelationsAppBarItem(
+sealed class OurRelationsAppBarItem(
+    val label: String,
+    val icon: ImageVector,
+    val destination: String,
+    val position: Int,
+) {
+    data object ProfileItemBar : OurRelationsAppBarItem(
         label = "Profile",
-        icon = Icons.Rounded.Person,
-        destination = profileNavigationRoute
+        icon = Icons.Rounded.PersonOutline,
+        destination = profileNavigationRoute,
+        position = 0,
     )
 
-    object SwipeItemBar : OurRelationsAppBarItem(
+    data object SwipeItemBar : OurRelationsAppBarItem(
         label = "Swipe",
-        icon = Icons.Rounded.Favorite,
-        destination = swipeNavigationRoute
+        icon = Icons.Rounded.FavoriteBorder,
+        destination = swipeNavigationRoute,
+        position = 1,
     )
 
-    object ChatListItemBar : OurRelationsAppBarItem(
+    data object ChatListItemBar : OurRelationsAppBarItem(
         label = "Chat List",
         icon = Icons.Rounded.MailOutline,
-        destination = chatListNavigationRoute
+        destination = chatListNavigationRoute,
+        position = 2,
     )
 }
 
