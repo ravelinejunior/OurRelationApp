@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +29,10 @@ import com.raveline.ourrelationsapp.ui.navigation.navHost.OurRelationsNavHost
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
 import com.raveline.ourrelationsapp.ui.navigation.routes.chatListNavigationRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.loginNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.profileNavigationRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.signupNavigationRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsAppBar
 import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeScreen
@@ -88,42 +90,36 @@ fun OurRelationsApp(
         mutableStateOf(item)
     }
 
-    OurRelationsApp(
-        bottomAppBarItemSelected = selectedItem,
-        onBottomAppBarItemSelectedChange = { item ->
-            navController.navigateSingleTopWithPopUpTo(item)
-        }
-    ) {
-        OurRelationsNavHost(navController = navController)
+    val isBottomBarVisible = remember(backStackEntryState) {
+        backStackEntryState?.destination?.route != loginNavigationRoute &&
+                backStackEntryState?.destination?.route != splashNavigationRoute &&
+                backStackEntryState?.destination?.route != signupNavigationRoute
+
     }
 
-
-}
-
-@Composable
-fun OurRelationsApp(
-    bottomAppBarItemSelected: OurRelationsAppBarItem = bottomAppBarItems.first(),
-    onBottomAppBarItemSelectedChange: (OurRelationsAppBarItem) -> Unit = {},
-    content: @Composable () -> Unit,
-) {
     Scaffold(
-        modifier = Modifier.background(Color(0xFFEC454B)),
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
         bottomBar = {
-            OurRelationsAppBar(
-                mItem = bottomAppBarItemSelected,
-                items = bottomAppBarItems,
-                onItemChanged = onBottomAppBarItemSelectedChange,
-                modifier = Modifier.semantics {
-                    testTag = "OurRelationsAppBar"
-                }
-            )
+            if (isBottomBarVisible) {
+                OurRelationsAppBar(
+                    mItem = selectedItem,
+                    items = bottomAppBarItems,
+                    onItemChanged = { item ->
+                        navController.navigateSingleTopWithPopUpTo(item)
+                    },
+                    modifier = Modifier.semantics {
+                        testTag = "OurRelationsAppBar"
+                    }
+                )
+            }
         }
     ) {
 
         Box(modifier = Modifier.padding(it)) {
-            content()
+            OurRelationsNavHost(navController = navController)
         }
     }
+
 
 }
 
@@ -132,6 +128,6 @@ fun OurRelationsApp(
 @Composable
 fun GreetingPreview() {
     OurRelationsAppTheme {
-        SwipeScreen()
+        SwipeScreen { _ -> }
     }
 }

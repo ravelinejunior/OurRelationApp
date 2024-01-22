@@ -1,11 +1,8 @@
 package com.raveline.ourrelationsapp.ui.screen.loginScreen
 
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.app.Activity
 import android.net.Uri
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -45,45 +41,47 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
-import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupScreenClass
+import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPlayer
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
-import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
-
-class LoginScreenClass : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            OurRelationsAppTheme {
-                LoginScreen(this)
-            }
-        }
-    }
-
-}
+import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
 
 
 @Composable
-fun LoginScreen(componentActivity: ComponentActivity) {
+fun LoginScreen(
+    activity: Activity,
+    viewModel: OurRelationsViewModel,
+    onNavigateToHome: (UserDataModel) -> Unit,
+    onNavigateToSignUp: () -> Unit
+) {
     Surface {
-        LoginScreenContent(getVideoUri(componentActivity), componentActivity)
+        LoginScreenContent(
+            getVideoUri(activity),
+            viewModel = viewModel,
+            onNavigateToHome = onNavigateToHome,
+            onNavigateToSignUp = onNavigateToSignUp
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("OpaqueUnitKey")
 @Composable
-fun LoginScreenContent(videoUri: Uri, componentActivity: ComponentActivity) {
+fun LoginScreenContent(
+    videoUri: Uri,
+    viewModel: OurRelationsViewModel,
+    onNavigateToHome: (UserDataModel) -> Unit,
+    onNavigateToSignUp: () -> Unit
+) {
     val context = LocalContext.current
     val passwordFocusRequester = FocusRequester()
     val emailFocusRequester = FocusRequester()
@@ -117,8 +115,7 @@ fun LoginScreenContent(videoUri: Uri, componentActivity: ComponentActivity) {
             modifier = Modifier
                 .navigationBarsWithImePadding()
                 .padding(16.dp)
-                .fillMaxSize()
-            ,
+                .fillMaxSize(),
         ) {
             Row(
                 modifier = Modifier.alpha(0.7f)
@@ -216,9 +213,7 @@ fun LoginScreenContent(videoUri: Uri, componentActivity: ComponentActivity) {
                         modifier = Modifier.padding(horizontal = 4.dp)
                     )
                     TextButton(
-                        onClick = {
-                            navigateBack(componentActivity, focusManager)
-                        },
+                        onClick = onNavigateToSignUp,
                         colors = ButtonDefaults.textButtonColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             contentColor = MaterialTheme.colorScheme.onBackground
@@ -233,28 +228,12 @@ fun LoginScreenContent(videoUri: Uri, componentActivity: ComponentActivity) {
     }
 }
 
-private fun navigateBack(
-    componentActivity: ComponentActivity,
-    focusManager: FocusManager
-) {
-    val intent = Intent(
-        componentActivity.applicationContext,
-        SignupScreenClass::class.java
-    )
-    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-    focusManager.clearFocus()
-    componentActivity.startActivity(intent)
-}
-
-fun getVideoUri(componentActivity: ComponentActivity): Uri {
+@SuppressLint("DiscouragedApi")
+private fun getVideoUri(
+    activity: Activity
+): Uri {
     val rawId =
-        componentActivity.resources.getIdentifier("clouds", "raw", componentActivity.packageName)
-    val videoUri = "android.resource://${componentActivity.packageName}/$rawId"
+        activity.resources.getIdentifier("clouds", "raw", activity.packageName)
+    val videoUri = "android.resource://${activity.packageName}/$rawId"
     return Uri.parse(videoUri)
-}
-
-@Preview
-@Composable
-fun PreviewLoginScreenContent() {
-    LoginScreenContent(getVideoUri(ComponentActivity()), ComponentActivity())
 }

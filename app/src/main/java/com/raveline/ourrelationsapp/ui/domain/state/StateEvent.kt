@@ -1,13 +1,12 @@
 package com.raveline.ourrelationsapp.ui.domain.state
 
-open class StateEvent<out T> (private val content:T){
-    var hasBeenHandled = false
-        private set
+open class StateEvent<out T>(private val content: T) {
+    private var hasBeenHandled = false
 
-    fun getContentOrNull():T? {
-        return  if (hasBeenHandled) {
+    fun getContentOrNull(): T? {
+        return if (hasBeenHandled) {
             null
-        }else{
+        } else {
             hasBeenHandled = true
             content
         }

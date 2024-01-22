@@ -1,5 +1,9 @@
 package com.raveline.ourrelationsapp.ui.domain.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class UserDataModel(
     var userId: String? = "",
     var name: String? = "",
@@ -9,7 +13,7 @@ data class UserDataModel(
     var password: String? = "",
     var bio: String? = "",
 
-    ) {
+    ):Parcelable {
     fun toMap() = mapOf(
         "userId" to userId,
         "name" to name,

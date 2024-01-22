@@ -12,6 +12,7 @@ import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,55 +29,18 @@ class OurRelationsViewModel @Inject constructor(
 
     private val TAG = "OurRelationsViewModel"
 
-    val inProgress = mutableStateOf(false)
     val popUpNotification = mutableStateOf<StateEvent<String>?>(StateEvent(""))
 
     private val _userState = MutableStateFlow<UserDataModel?>(null)
     val userState: StateFlow<UserDataModel?> get() = _userState
 
-    init {
-        isUserLoggedIn()
-    }
-
-    fun isUserLoggedIn() = viewModelScope.launch {
-        inProgress.value = true
-        val firebaseAuthentication = authenticationUseCaseModel.firebaseAuth
-        val fireStoreDatabase = authenticationUseCaseModel.fireStore
-        suspendCoroutine<Pair<Boolean, UserDataModel?>> {
-            if (firebaseAuthentication.currentUser != null) {
-                fireStoreDatabase.collection(userFirebaseDatabaseCollection)
-                    .document(firebaseAuthentication.currentUser?.uid.toString())
-                    .addSnapshotListener { value, error ->
-                        if (error != null) {
-                            it.resume(Pair(false, null))
-                        }
-                        if (value != null) {
-                            inProgress.value = false
-                            val userModel = value.toObject<UserDataModel>()
-                            _userState.update {
-                                userModel
-                            }
-                            it.resume(Pair(true, userModel))
-                        }
-                    }
-            } else {
-                it.resume(Pair(false, null))
-                inProgress.value = false
-            }
-            inProgress.value = false
-        }
-
-    }
-
     fun onSignup(userName: String, email: String, password: String) {
-        inProgress.value = true
         if (userName.isEmpty() or email.isEmpty() or password.isEmpty()) {
             handleException(customMessage = "All fields must be filled!")
-            inProgress.value = false
             return
         }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Main) {
             val singUpUserComplete =
                 authenticationUseCaseModel.signUpUseCase.invoke(userName, email, password)
             if (singUpUserComplete.first) {
@@ -89,14 +53,11 @@ class OurRelationsViewModel @Inject constructor(
                 if (userStored.first) {
                     // user created
                     isUserLoggedIn()
-                    inProgress.value = false
                 } else {
                     handleException(customMessage = userStored.second)
                 }
-                inProgress.value = false
             } else {
                 handleException(customMessage = singUpUserComplete.second)
-                inProgress.value = false
             }
         }
 
@@ -114,16 +75,44 @@ class OurRelationsViewModel @Inject constructor(
             name, email, bio, imageUrl, encryptedPassword
         )
 
-        return viewModelScope.async { result }.await()
+        return viewModelScope.async {
+            result
+        }.await()
+    }
+
+    fun isUserLoggedIn() = viewModelScope.launch(Main) {
+        val firebaseAuthentication = authenticationUseCaseModel.firebaseAuth
+        val fireStoreDatabase = authenticationUseCaseModel.fireStore
+        suspendCoroutine<Pair<Boolean, UserDataModel?>> {
+            if (firebaseAuthentication.currentUser != null) {
+                fireStoreDatabase.collection(userFirebaseDatabaseCollection)
+                    .document(firebaseAuthentication.currentUser?.uid.toString())
+                    .addSnapshotListener { value, error ->
+                        if (error != null) {
+                            it.resume(Pair(false, null))
+                        }
+                        if (value != null) {
+                            val userModel = value.toObject<UserDataModel>()
+                            _userState.update {
+                                userModel
+                            }
+                            it.resume(Pair(true, userModel))
+                        }
+                    }
+            } else {
+                it.resume(Pair(false, null))
+            }
+        }
+
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {
-        Log.e(TAG, "Handle Exception", exception)
+        Log.e(TAG, "Handle Exception ${exception?.message}", exception)
         exception?.stackTrace
         val errorMessage = exception?.localizedMessage ?: ""
         val message = if (customMessage.isEmpty()) errorMessage else "$customMessage: $errorMessage"
         popUpNotification.value = StateEvent(message)
-        inProgress.value = false
     }
+
 
 }

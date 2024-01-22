@@ -4,13 +4,20 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeScreen
 
 const val swipeNavigationRoute = "SwipeRoute"
+const val userDetailsKey = "user_data"
 
-fun NavGraphBuilder.swipeNavigationRoute() {
+fun NavGraphBuilder.swipeNavigationRoute(
+    onNavigateToSwipe: (UserDataModel) -> Unit
+) {
     composable(swipeNavigationRoute) {
-        SwipeScreen()
+
+        SwipeScreen(
+            onNavigateToSwipe = onNavigateToSwipe
+        )
     }
 }
 

@@ -44,7 +44,8 @@ fun TextInput(
     inputType: InputType,
     focusRequester: FocusRequester? = null,
     keyboardActions: KeyboardActions,
-    textValue: (String) -> Unit
+    textValue: (String) -> Unit,
+    enabled:Boolean = true
 ) {
 
     var value by remember { mutableStateOf("") }
@@ -55,6 +56,7 @@ fun TextInput(
             value = it
             textValue(value)
         },
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester ?: FocusRequester()),

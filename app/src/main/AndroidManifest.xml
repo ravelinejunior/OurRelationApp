@@ -17,7 +17,7 @@
         android:theme="@style/Theme.OurRelationsApp"
         tools:targetApi="31">
         <activity
-            android:name=".ui.screen.loginScreen.LoginScreenClass"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.OurRelationsApp">
             <intent-filter>
@@ -29,11 +29,18 @@
         <activity
             android:name=".ui.screen.signupScreen.SignupScreenClass"
             android:enabled="true"
-            android:exported="true" />
-        <activity
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
+        <!--<activity
+            android:name=".ui.screen.loginScreen.LoginScreenClass"
+            android:enabled="true"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />-->
+      <!--  <activity
             android:name=".MainActivity"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />-->
     </application>
 
 </manifest>

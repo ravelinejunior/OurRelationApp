@@ -52,11 +52,14 @@ import com.raveline.ourrelationsapp.ui.common.components.Direction
 import com.raveline.ourrelationsapp.ui.common.components.rememberSwipeableCardState
 import com.raveline.ourrelationsapp.ui.common.components.swipableCard
 import com.raveline.ourrelationsapp.ui.domain.models.MatchProfile
+import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.models.profiles
 import kotlinx.coroutines.launch
 
 @Composable
-fun SwipeScreen() {
+fun SwipeScreen(
+    onNavigateToSwipe: (UserDataModel) -> Unit
+) {
     SwipeCards()
 }
 
@@ -74,7 +77,7 @@ fun SwipeCards() {
                         Color.Black,
                         Color(0xFF2979FF),
 
-                    )
+                        )
                 )
             )
     ) {
