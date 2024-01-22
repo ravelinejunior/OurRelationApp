@@ -3,9 +3,11 @@ package com.raveline.ourrelationsapp
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,16 +16,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.raveline.ourrelationsapp.ui.navigation.graph.navigateSingleTopWithPopUpTo
 import com.raveline.ourrelationsapp.ui.navigation.navHost.OurRelationsNavHost
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
@@ -45,9 +52,24 @@ private val TAG: String = MainActivity::class.java.simpleName
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
             OurRelationsAppTheme {
-                // A surface container using the 'background' color from the theme
+                val systemUiController = rememberSystemUiController()
+                val isSystemInDarkMode = isSystemInDarkTheme()
+                val window: Window = this.window
+                window.navigationBarColor = MaterialTheme.colorScheme.background.toArgb()
+
+                if (isSystemInDarkMode) {
+                    systemUiController.setSystemBarsColor(
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    )
+                } else {
+                    systemUiController.setSystemBarsColor(
+                        color = Color.Transparent
+                    )
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -98,7 +120,7 @@ fun OurRelationsApp(
     }
 
     Scaffold(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
         bottomBar = {
             if (isBottomBarVisible) {
                 OurRelationsAppBar(
@@ -107,9 +129,14 @@ fun OurRelationsApp(
                     onItemChanged = { item ->
                         navController.navigateSingleTopWithPopUpTo(item)
                     },
-                    modifier = Modifier.semantics {
-                        testTag = "OurRelationsAppBar"
-                    }
+                    modifier =
+                    Modifier
+                        .background(
+                            color = Color.Red
+                        )
+                        .semantics {
+                            testTag = "OurRelationsAppBar"
+                        }
                 )
             }
         }

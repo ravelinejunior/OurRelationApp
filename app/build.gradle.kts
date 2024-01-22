@@ -55,6 +55,9 @@ android {
 
 dependencies {
 
+    //Splash Api
+    implementation ("androidx.core:core-splashscreen:1.0.1")
+
     //ExoPlayer
     implementation("com.google.accompanist:accompanist-insets:0.23.1")
     implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
