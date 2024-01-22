@@ -15,6 +15,7 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
 import com.raveline.ourrelationsapp.ui.navigation.routes.profileNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.signupRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.singleChatNavigationRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 
@@ -26,9 +27,9 @@ fun NavGraphBuilder.homeGraph(
     onNavigateToSignUp: () -> Unit,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSwipe: (UserDataModel) -> Unit,
-    ) {
+) {
     navigation(
-        startDestination = loginNavigationRoute,
+        startDestination = splashNavigationRoute,
         route = homeGraphRoute
     ) {
         chatListRoute()
@@ -45,7 +46,10 @@ fun NavGraphBuilder.homeGraph(
             onNavigateToHome = onNavigateToHome,
             onNavigateToLogin = onNavigateToLogin
         )
-        splashRoute()
+        splashRoute(
+            onNavigateToHome = onNavigateToHome,
+            onNavigateToLogin = onNavigateToLogin
+        )
     }
 }
 

@@ -1,10 +1,5 @@
 package com.raveline.ourrelationsapp.ui.screen.splashScreen
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,91 +18,71 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.google.firebase.auth.FirebaseAuth
-import com.raveline.ourrelationsapp.MainActivity
 import com.raveline.ourrelationsapp.R
-import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
-import dagger.hilt.android.AndroidEntryPoint
+import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
+import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
 import kotlinx.coroutines.delay
-import javax.inject.Inject
 
 
-@SuppressLint("CustomSplashScreen")
-@AndroidEntryPoint
-class SplashScreen : ComponentActivity() {
+@Composable
+fun SplashScreen(
+    viewModel: OurRelationsViewModel,
+    onNavigateToHome: (UserDataModel) -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
 
-    @Inject
-    lateinit var firebaseAuth: FirebaseAuth
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-
-            OurRelationsAppTheme {
-                SplashScreenContent()
-            }
-
+    // Navigate to the main screen when the animation finishes
+    LaunchedEffect(Unit) {
+        viewModel.isUserLoggedIn()
+        delay(1500L)
+        if (viewModel.userState.value != null) {
+            onNavigateToHome(viewModel.userState.value!!)
+        } else {
+            onNavigateToLogin()
         }
     }
 
-    @Composable
-    fun SplashScreenContent() {
-
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash))
-        val progress by animateLottieCompositionAsState(
-            composition = composition,
-            iterations = LottieConstants.IterateForever
-        )
-
-        // Navigate to the main screen when the animation finishes
-        LaunchedEffect(Unit) {
-            delay(2000)
-            if (firebaseAuth.currentUser != null) {
-                val intent = Intent(
-                    applicationContext,
-                    MainActivity::class.java
-                )
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            } else {
-
-            }
-        }
-
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background.copy(alpha = 0.7f)),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                LottieAnimation(
-                    composition = composition,
-                    progress = progress,
-                    contentScale = ContentScale.Crop,
-                    renderMode = RenderMode.AUTOMATIC
-                )
+            Text(
+                text = "Our Relationship",
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 46.sp),
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Cursive,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            LottieAnimation(
+                composition = composition,
+                progress = progress,
+                contentScale = ContentScale.Crop,
+                renderMode = RenderMode.AUTOMATIC
+            )
 
-                Text(
-                    text = "Our Relationship",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Cursive,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
         }
     }
 }
+

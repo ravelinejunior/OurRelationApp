@@ -87,7 +87,7 @@ fun SignupScreen(
 
     val scrollableState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
-    var isLoading = remember {
+    val isLoading = remember {
         mutableStateOf(false)
     }
 
@@ -133,10 +133,7 @@ fun SignupScreen(
     }
 
     LaunchedEffect(viewModel.userState) {
-        /* if (viewModel.userState.value != null) {
-             onNavigateToHome(viewModel.userState.value!!)
-         }
-         */
+
         viewModel.isUserLoggedIn()
 
         viewModel.userState.collect { user ->
@@ -256,9 +253,8 @@ fun SignupScreen(
                             coroutineScope.launch(Main) {
                                 isLoading.value = true
                                 viewModel.onSignup(userName, userEmail, userPassword)
-                                delay(2000L)
+                                delay(1500L)
                                 isLoading.value = false
-                                //viewModel.isUserLoggedIn()
                             }
                         },
                         enabled = !isLoading.value,

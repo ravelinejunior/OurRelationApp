@@ -1,6 +1,8 @@
 package com.raveline.ourrelationsapp.ui.navigation.routes
 
 import android.app.Activity
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -17,7 +19,33 @@ fun NavGraphBuilder.loginNavigationRoute(
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSignUp: () -> Unit,
 ) {
-    composable(loginNavigationRoute) {
+    composable(
+        loginNavigationRoute,
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(700)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(700)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(700)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.End,
+                animationSpec = tween(700)
+            )
+        },
+    ) {
         val activity = LocalContext.current as Activity
         val viewModel: OurRelationsViewModel = hiltViewModel()
         LoginScreen(

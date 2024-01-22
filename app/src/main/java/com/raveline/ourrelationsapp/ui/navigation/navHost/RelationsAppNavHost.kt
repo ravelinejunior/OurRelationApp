@@ -10,6 +10,7 @@ import com.raveline.ourrelationsapp.ui.navigation.graph.homeGraphRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToLogin
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSignup
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
+import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.userDetailsKey
 
 
@@ -23,10 +24,18 @@ fun OurRelationsNavHost(
     ) {
         homeGraph(
             onNavigateToLogin = {
-                navController.navigateToLogin()
+                navController.navigateToLogin(
+                    navOptions = navOptions {
+                        launchSingleTop = true
+                    }
+                )
             },
             onNavigateToSignUp = {
-                navController.navigateToSignup()
+                navController.navigateToSignup(
+                    navOptions = navOptions {
+                        launchSingleTop = true
+                    }
+                )
             },
             onNavigateToHome = { user ->
 
