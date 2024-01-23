@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -30,19 +31,50 @@ class OurRelationsViewModel @Inject constructor(
     private val TAG = "OurRelationsViewModel"
 
     val popUpNotification = mutableStateOf<StateEvent<String>?>(StateEvent(""))
+    val inProgress = mutableStateOf(false)
 
     private val _userState = MutableStateFlow<UserDataModel?>(null)
     val userState: StateFlow<UserDataModel?> get() = _userState
+
+    fun onSignIn(email: String, password: String) {
+        if (email.isEmpty() or password.isEmpty()) {
+            handleException(customMessage = "All fields must be filled!")
+            return
+        }
+
+        inProgress.value = true
+
+        viewModelScope.launch {
+            val signInComplete =
+                authenticationUseCaseModel.signInUseCase.invoke(email.trim(), password.trim())
+            if (signInComplete.first) {
+                inProgress.value = false
+                isUserLoggedIn()
+            } else {
+                handleException(customMessage = signInComplete.second)
+            }
+        }
+
+    }
 
     fun onSignup(userName: String, email: String, password: String) {
         if (userName.isEmpty() or email.isEmpty() or password.isEmpty()) {
             handleException(customMessage = "All fields must be filled!")
             return
         }
-
-        viewModelScope.launch(Main) {
+        inProgress.value = true
+        viewModelScope.launch {
             val singUpUserComplete =
-                authenticationUseCaseModel.signUpUseCase.invoke(userName, email, password)
+                authenticationUseCaseModel.signUpUseCase.invoke(
+                    userName.trim()
+                        .replaceFirstChar {
+                            if (it.isLowerCase())
+                                it.titlecase(Locale.getDefault())
+                            else it.toString()
+                        },
+                    email.trim(),
+                    password.trim()
+                )
             if (singUpUserComplete.first) {
                 val encrypt = encryptString(password, encryptionKey)
                 val userStored = createOrUpdateProfile(
@@ -53,6 +85,7 @@ class OurRelationsViewModel @Inject constructor(
                 if (userStored.first) {
                     // user created
                     isUserLoggedIn()
+                    inProgress.value = false
                 } else {
                     handleException(customMessage = userStored.second)
                 }
@@ -74,7 +107,6 @@ class OurRelationsViewModel @Inject constructor(
         val result = authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
             name, email, bio, imageUrl, encryptedPassword
         )
-
         return viewModelScope.async {
             result
         }.await()
@@ -112,6 +144,7 @@ class OurRelationsViewModel @Inject constructor(
         val errorMessage = exception?.localizedMessage ?: ""
         val message = if (customMessage.isEmpty()) errorMessage else "$customMessage: $errorMessage"
         popUpNotification.value = StateEvent(message)
+        inProgress.value = false
     }
 
 

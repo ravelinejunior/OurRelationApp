@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
 
 @Composable
@@ -32,6 +33,28 @@ fun CommonProgressSpinner() {
             color = Color.Black,
             strokeWidth = 6.dp
         )
+    }
+}
+
+@Composable
+fun CommonProgress(
+    viewModel: OurRelationsViewModel,
+) {
+    if (viewModel.inProgress.value){
+        Box(
+            modifier = Modifier
+                .alpha(0.5f)
+                .background(Color.LightGray)
+                .clickable(enabled = false) {}
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(100.dp),
+                color = Color.Black,
+                strokeWidth = 6.dp
+            )
+        }
     }
 }
 

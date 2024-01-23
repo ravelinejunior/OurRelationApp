@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
+import com.raveline.ourrelationsapp.ui.common.components.NotificationMessage
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
@@ -61,14 +64,16 @@ fun LoginScreen(
     activity: Activity,
     viewModel: OurRelationsViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
-    onNavigateToSignUp: () -> Unit
+    onNavigateToSignUp: () -> Unit,
+    content: @Composable () -> Unit
 ) {
     Surface {
         LoginScreenContent(
             getVideoUri(activity),
             viewModel = viewModel,
             onNavigateToHome = onNavigateToHome,
-            onNavigateToSignUp = onNavigateToSignUp
+            onNavigateToSignUp = onNavigateToSignUp,
+            content = content
         )
     }
 }
@@ -80,7 +85,8 @@ fun LoginScreenContent(
     videoUri: Uri,
     viewModel: OurRelationsViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
-    onNavigateToSignUp: () -> Unit
+    onNavigateToSignUp: () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val passwordFocusRequester = FocusRequester()
@@ -97,6 +103,17 @@ fun LoginScreenContent(
         mutableStateOf("")
     }
 
+    LaunchedEffect(viewModel.userState) {
+           viewModel.userState.collect { user ->
+            if (user != null) {
+                onNavigateToHome(viewModel.userState.value!!)
+            }
+        }
+
+    }
+
+    NotificationMessage(viewModel = viewModel)
+
     DisposableEffect(
         AndroidView(
             factory = { it.buildPlayerView(exoPlayer) },
@@ -111,119 +128,119 @@ fun LoginScreenContent(
     ProvideWindowInsets {
         val scrollableState = rememberScrollState()
 
-        Column(
-            modifier = Modifier
-                .navigationBarsWithImePadding()
-                .padding(16.dp)
-                .fillMaxSize(),
-        ) {
-            Row(
-                modifier = Modifier.alpha(0.7f)
-            ) {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = "What are you waiting for ?",
-                            fontFamily = FontFamily.Cursive,
-                            fontSize = 32.sp
-                        )
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color.Transparent,
-                        actionIconContentColor = onPrimaryLight,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onTertiary,
-                        scrolledContainerColor = MaterialTheme.colorScheme.onTertiary,
-                        titleContentColor = Color.White
-                    ),
-                    navigationIcon = {
-
-                    }
-                )
-            }
+        Box {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.4f),
-                verticalArrangement = Arrangement.spacedBy(
-                    16.dp,
-                    alignment = Alignment.CenterVertically
-                ),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .navigationBarsWithImePadding()
+                    .padding(16.dp)
+                    .fillMaxSize(),
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.fire),
-                    contentDescription = stringResource(id = R.string.app_name),
-                    Modifier.size(80.dp),
-                    tint = Color.White
-                )
-            }
-
-            Column(
-                modifier = Modifier.verticalScroll(scrollableState),
-                verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                TextInput(
-                    inputType = InputType.Email,
-                    keyboardActions = KeyboardActions(onNext = {
-                        focusManager.clearFocus()
-                        passwordFocusRequester.requestFocus()
-                    }),
-                    focusRequester = emailFocusRequester,
-                    textValue = {
-                        userEmail = it
-                    }
-                )
-                TextInput(
-                    inputType = InputType.Password,
-                    keyboardActions = KeyboardActions(onDone = {
-                        focusManager.clearFocus()
-                    }),
-                    focusRequester = passwordFocusRequester,
-                    textValue = {
-                        userPassword = it
-                    }
-                )
-
-                Button(
-                    onClick = {
-
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    )
+                Row(
+                    modifier = Modifier.alpha(0.7f)
                 ) {
-                    Text("LOGIN", Modifier.padding(vertical = 8.dp))
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                text = "What are you waiting for ?",
+                                fontFamily = FontFamily.Cursive,
+                                fontSize = 32.sp
+                            )
+                        },
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = Color.Transparent,
+                            actionIconContentColor = onPrimaryLight,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onTertiary,
+                            scrolledContainerColor = MaterialTheme.colorScheme.onTertiary,
+                            titleContentColor = Color.White
+                        ),
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.4f),
+                    verticalArrangement = Arrangement.spacedBy(
+                        16.dp,
+                        alignment = Alignment.CenterVertically
+                    ),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.fire),
+                        contentDescription = stringResource(id = R.string.app_name),
+                        Modifier.size(80.dp),
+                        tint = Color.White
+                    )
                 }
 
-                Divider(
-                    color = Color.White.copy(alpha = 0.3f),
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(top = 48.dp)
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier.verticalScroll(scrollableState),
+                    verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        "Still don't have an account? Click Here",
-                        color = Color.White,
-                        modifier = Modifier.padding(horizontal = 4.dp)
+
+                    TextInput(
+                        inputType = InputType.Email,
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.clearFocus()
+                            passwordFocusRequester.requestFocus()
+                        }),
+                        focusRequester = emailFocusRequester,
+                        textValue = {
+                            userEmail = it
+                        }
                     )
-                    TextButton(
-                        onClick = onNavigateToSignUp,
+                    TextInput(
+                        inputType = InputType.Password,
+                        keyboardActions = KeyboardActions(onDone = {
+                            focusManager.clearFocus()
+                        }),
+                        focusRequester = passwordFocusRequester,
+                        textValue = {
+                            userPassword = it
+                        }
+                    )
+
+                    Button(
+                        onClick = {
+                            viewModel.onSignIn(email = userEmail, password = userPassword)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.textButtonColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             contentColor = MaterialTheme.colorScheme.onBackground
                         )
                     ) {
-                        Text("SING UP")
+                        Text("LOGIN", Modifier.padding(vertical = 8.dp))
+                    }
+
+                    Divider(
+                        color = Color.White.copy(alpha = 0.3f),
+                        thickness = 1.dp,
+                        modifier = Modifier.padding(top = 48.dp)
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Still don't have an account? Click Here",
+                            color = Color.White,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        TextButton(
+                            onClick = onNavigateToSignUp,
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.onBackground
+                            )
+                        ) {
+                            Text("SING UP")
+                        }
                     }
                 }
-            }
 
+            }
+            content()
         }
     }
 }

@@ -3,7 +3,6 @@ package com.raveline.ourrelationsapp.ui.screen.signupScreen
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,11 +48,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewModelScope
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
-import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
 import com.raveline.ourrelationsapp.ui.common.components.NotificationMessage
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
@@ -63,9 +59,6 @@ import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPl
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
 import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 const val signupNavigationRoute = "SignupRoute"
 
@@ -76,7 +69,8 @@ fun SignupScreen(
     activity: Activity,
     viewModel: OurRelationsViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToLogin: () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val passwordFocusRequester = FocusRequester()
     val emailFocusRequester = FocusRequester()
@@ -86,7 +80,6 @@ fun SignupScreen(
     }
 
     val scrollableState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
     val isLoading = remember {
         mutableStateOf(false)
     }
@@ -116,34 +109,13 @@ fun SignupScreen(
         }
     }
 
-    LaunchedEffect(isLoading) {
-        if (isLoading.value) {
-            isLoading.value = (true)
-            delay(4000)
-            isLoading.value = (false)
-            delay(1000)
-            Toast.makeText(
-                activity.applicationContext,
-                "Something is not right. Try again",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-
-    }
-
     LaunchedEffect(viewModel.userState) {
-
-        viewModel.isUserLoggedIn()
-
         viewModel.userState.collect { user ->
             if (user != null) {
                 onNavigateToHome(viewModel.userState.value!!)
             }
         }
     }
-
-    observeUser(viewModel, onNavigateToHome)
 
     ProvideWindowInsets {
         Box(
@@ -250,12 +222,7 @@ fun SignupScreen(
                     Button(
                         onClick = {
                             focusManager.clearFocus()
-                            coroutineScope.launch(Main) {
-                                isLoading.value = true
-                                viewModel.onSignup(userName, userEmail, userPassword)
-                                delay(1500L)
-                                isLoading.value = false
-                            }
+                            viewModel.onSignup(userName, userEmail, userPassword)
                         },
                         enabled = !isLoading.value,
                         modifier = Modifier.fillMaxWidth(),
@@ -297,22 +264,7 @@ fun SignupScreen(
                 }
             }
         }
-        if (isLoading.value) {
-            CommonProgressSpinner()
-        }
-    }
-}
-
-fun observeUser(viewModel: OurRelationsViewModel, onNavigateToHome: (UserDataModel) -> Unit) {
-    viewModel.viewModelScope.launch {
-        viewModel.isUserLoggedIn()
-    }
-    viewModel.viewModelScope.launch {
-        viewModel.userState.collect { user ->
-            if (user != null) {
-                onNavigateToHome(viewModel.userState.value!!)
-            }
-        }
+        content()
     }
 }
 

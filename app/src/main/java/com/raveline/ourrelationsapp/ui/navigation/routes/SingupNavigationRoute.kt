@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupScreen
 import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
@@ -53,6 +54,9 @@ fun NavGraphBuilder.signupRoute(
             viewModel = viewModel,
             onNavigateToHome = onNavigateToHome,
             onNavigateToLogin = onNavigateToLogin,
+            content = {
+                CommonProgress(viewModel)
+            }
         )
     }
 }

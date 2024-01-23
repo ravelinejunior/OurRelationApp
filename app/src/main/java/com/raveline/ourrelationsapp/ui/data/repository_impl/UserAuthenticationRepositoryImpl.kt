@@ -7,7 +7,6 @@ import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollecti
 import com.raveline.ourrelationsapp.ui.common.utils.userNameFirebaseKey
 import com.raveline.ourrelationsapp.ui.domain.interfaces.UserAuthenticationRepository
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
-import kotlinx.coroutines.DelicateCoroutinesApi
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -63,9 +62,18 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
                 }
         }
 
-    override suspend fun signInUser(email: String, password: String): Pair<Boolean, String> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun signInUser(email: String, password: String): Pair<Boolean, String> =
+        suspendCoroutine { continuation ->
+            firebaseAuthentication.signInWithEmailAndPassword(
+                email.trim(), password.trim()
+            ).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    continuation.resume(Pair(true, "User signed in"))
+                } else {
+                    continuation.resume(Pair(false, task.exception?.message.toString()))
+                }
+            }
+        }
 
     override suspend fun createOrUpdateUser(
         name: String?,
