@@ -9,15 +9,18 @@ class CreateOrUpdateUserUseCase @Inject constructor(private val repository: User
         email: String? = null,
         bio: String? = null,
         imageUrl: String? = null,
-        encryptedPassword: String? = null
-
-    ):Pair<Boolean,String> {
+        encryptedPassword: String? = null,
+        gender: String? = null,
+        genderPreference: String? = null,
+        ): Pair<Boolean, String> {
         return repository.createOrUpdateUser(
             name = name,
             email = email,
             bio = bio,
             imageUrl = imageUrl,
-            encryptedPassword = encryptedPassword
+            encryptedPassword = encryptedPassword,
+            gender = gender,
+            genderPreference = genderPreference
         )
     }
 }

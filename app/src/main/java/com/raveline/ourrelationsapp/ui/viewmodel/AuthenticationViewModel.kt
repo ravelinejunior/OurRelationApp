@@ -8,6 +8,7 @@ import com.google.firebase.firestore.toObject
 import com.raveline.ourrelationsapp.ui.common.utils.encryptString
 import com.raveline.ourrelationsapp.ui.common.utils.encryptionKey
 import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
+import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
@@ -80,7 +81,7 @@ class AuthenticationViewModel @Inject constructor(
                 val userStored = createOrUpdateProfile(
                     name = userName,
                     email = email,
-                    password = encrypt
+                    password = encrypt,
                 )
 
                 if (userStored.first) {
@@ -139,10 +140,12 @@ class AuthenticationViewModel @Inject constructor(
         bio: String? = null,
         imageUrl: String? = null,
         password: String,
+        gender: GenderEnum? = null,
+        genderPreference: String? = null,
     ): Pair<Boolean, String> {
         val encryptedPassword = encryptString(password, encryptionKey)
         val result = authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
-            name, email, bio, imageUrl, encryptedPassword
+            name, email, bio, imageUrl, encryptedPassword, gender?.name, genderPreference
         )
         return viewModelScope.async {
             result

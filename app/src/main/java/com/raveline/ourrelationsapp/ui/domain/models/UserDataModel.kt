@@ -12,6 +12,8 @@ data class UserDataModel(
     var email: String? = "",
     var password: String? = "",
     var bio: String? = "",
+    var gender: String? = "",
+    var genderPreference: String? = "",
 
     ):Parcelable {
     fun toMap() = mapOf(
@@ -22,5 +24,11 @@ data class UserDataModel(
         "email" to email,
         "password" to password,
         "bio" to bio,
+        "gender" to bio,
+        "genderPreference" to bio,
     )
+}
+
+enum class GenderEnum{
+    MALE, FEMALE, OTHER
 }

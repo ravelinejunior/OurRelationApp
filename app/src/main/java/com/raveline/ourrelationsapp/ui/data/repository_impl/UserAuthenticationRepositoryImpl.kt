@@ -82,7 +82,9 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
         email: String?,
         bio: String?,
         imageUrl: String?,
-        encryptedPassword: String?
+        encryptedPassword: String?,
+        gender: String?,
+        genderPreference: String?
     ): Pair<Boolean, String> = suspendCoroutine { continuation ->
         val uid = firebaseAuthentication.currentUser?.uid
         val userData = UserDataModel(
@@ -91,7 +93,9 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
             email = email,
             bio = bio,
             imageUrl = imageUrl,
-            password = encryptedPassword
+            password = encryptedPassword,
+            gender = gender,
+            genderPreference = genderPreference,
         )
 
         uid?.let { mUid ->

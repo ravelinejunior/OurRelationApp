@@ -9,6 +9,8 @@ interface UserAuthenticationRepository {
         bio: String? = null,
         imageUrl: String? = null,
         encryptedPassword: String? = null,
+        gender: String? = null,
+        genderPreference: String? = null,
     ): Pair<Boolean, String>
     suspend fun signOutUser()
 
