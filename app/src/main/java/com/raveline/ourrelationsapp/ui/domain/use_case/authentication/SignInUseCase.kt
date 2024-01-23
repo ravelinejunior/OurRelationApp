@@ -10,4 +10,8 @@ class SignInUseCase @Inject constructor(private val repository: UserAuthenticati
             password = password
         )
     }
+
+    suspend operator fun invoke(){
+        repository.signOutUser()
+    }
 }

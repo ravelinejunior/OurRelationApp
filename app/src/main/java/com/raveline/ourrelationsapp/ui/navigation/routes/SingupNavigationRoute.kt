@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupScreen
-import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 const val signupNavigationRoute = "signup_route"
 
@@ -48,7 +48,7 @@ fun NavGraphBuilder.signupRoute(
         },
     ) {
         val activity = LocalContext.current as Activity
-        val viewModel: OurRelationsViewModel = hiltViewModel()
+        val viewModel: AuthenticationViewModel = hiltViewModel()
         SignupScreen(
             activity = activity,
             viewModel = viewModel,

@@ -1,12 +1,14 @@
 package com.raveline.ourrelationsapp.ui.data.repository_impl
 
 import android.util.Log
+import androidx.compose.ui.text.capitalize
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
 import com.raveline.ourrelationsapp.ui.common.utils.userNameFirebaseKey
 import com.raveline.ourrelationsapp.ui.domain.interfaces.UserAuthenticationRepository
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -85,7 +87,7 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
         val uid = firebaseAuthentication.currentUser?.uid
         val userData = UserDataModel(
             userId = uid,
-            userName = name,
+            userName = name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
             email = email,
             bio = bio,
             imageUrl = imageUrl,
@@ -157,6 +159,10 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
                 }
         }
 
+    }
+
+    override suspend fun signOutUser() {
+        firebaseAuthentication.signOut()
     }
 }
 

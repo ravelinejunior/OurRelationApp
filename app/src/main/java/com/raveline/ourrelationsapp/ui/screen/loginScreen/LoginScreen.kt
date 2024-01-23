@@ -56,18 +56,17 @@ import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPlayer
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
-import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 
 @Composable
 fun LoginScreen(
     activity: Activity,
-    viewModel: OurRelationsViewModel,
+    viewModel: AuthenticationViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSignUp: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    Surface {
         LoginScreenContent(
             getVideoUri(activity),
             viewModel = viewModel,
@@ -75,7 +74,7 @@ fun LoginScreen(
             onNavigateToSignUp = onNavigateToSignUp,
             content = content
         )
-    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +82,7 @@ fun LoginScreen(
 @Composable
 fun LoginScreenContent(
     videoUri: Uri,
-    viewModel: OurRelationsViewModel,
+    viewModel: AuthenticationViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSignUp: () -> Unit,
     content: @Composable () -> Unit

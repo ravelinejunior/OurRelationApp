@@ -27,13 +27,13 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.raveline.ourrelationsapp.R
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
-import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 import kotlinx.coroutines.delay
 
 
 @Composable
 fun SplashScreen(
-    viewModel: OurRelationsViewModel,
+    viewModel: AuthenticationViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {

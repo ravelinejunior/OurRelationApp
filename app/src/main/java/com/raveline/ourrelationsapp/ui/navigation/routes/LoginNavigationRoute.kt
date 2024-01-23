@@ -10,10 +10,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
-import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.loginScreen.LoginScreen
-import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 const val loginNavigationRoute = "login_route"
 
@@ -43,13 +42,13 @@ fun NavGraphBuilder.loginNavigationRoute(
         },
         popExitTransition = {
             slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Companion.End,
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Start,
                 animationSpec = tween(700)
             )
         },
     ) {
         val activity = LocalContext.current as Activity
-        val viewModel: OurRelationsViewModel = hiltViewModel()
+        val viewModel: AuthenticationViewModel = hiltViewModel()
         LoginScreen(
             activity = activity,
             viewModel = viewModel,

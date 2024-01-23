@@ -58,7 +58,7 @@ import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPlayer
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
-import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 const val signupNavigationRoute = "SignupRoute"
 
@@ -67,7 +67,7 @@ const val signupNavigationRoute = "SignupRoute"
 @Composable
 fun SignupScreen(
     activity: Activity,
-    viewModel: OurRelationsViewModel,
+    viewModel: AuthenticationViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToLogin: () -> Unit,
     content: @Composable () -> Unit

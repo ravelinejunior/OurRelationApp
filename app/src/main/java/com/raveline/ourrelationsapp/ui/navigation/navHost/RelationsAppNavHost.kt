@@ -10,7 +10,6 @@ import com.raveline.ourrelationsapp.ui.navigation.graph.homeGraphRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToLogin
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSignup
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
-import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.userDetailsKey
 
 
@@ -46,7 +45,15 @@ fun OurRelationsNavHost(
                     },
                 )
             },
-            onNavigateToSwipe = { user ->
+            onNavigateToSignOut = {
+                navController.navigateToLogin(
+                    navOptions {
+                        launchSingleTop = true
+                        launchSingleTop
+                    }
+                )
+            },
+            onNavigateToSwipe = { _ ->
                 navController.previousBackStackEntry?.savedStateHandle?.get<UserDataModel>(
                     userDetailsKey
                 )

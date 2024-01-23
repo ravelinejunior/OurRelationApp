@@ -24,7 +24,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
-class OurRelationsViewModel @Inject constructor(
+class AuthenticationViewModel @Inject constructor(
     private val authenticationUseCaseModel: AuthenticationUseCaseModel
 ) : ViewModel() {
 
@@ -79,6 +79,7 @@ class OurRelationsViewModel @Inject constructor(
                 val encrypt = encryptString(password, encryptionKey)
                 val userStored = createOrUpdateProfile(
                     name = userName,
+                    email = email,
                     password = encrypt
                 )
 
@@ -96,21 +97,6 @@ class OurRelationsViewModel @Inject constructor(
 
     }
 
-    private suspend fun createOrUpdateProfile(
-        name: String? = null,
-        email: String? = null,
-        bio: String? = null,
-        imageUrl: String? = null,
-        password: String,
-    ): Pair<Boolean, String> {
-        val encryptedPassword = encryptString(password, encryptionKey)
-        val result = authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
-            name, email, bio, imageUrl, encryptedPassword
-        )
-        return viewModelScope.async {
-            result
-        }.await()
-    }
 
     fun isUserLoggedIn() = viewModelScope.launch(Main) {
         val firebaseAuthentication = authenticationUseCaseModel.firebaseAuth
@@ -136,6 +122,31 @@ class OurRelationsViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            authenticationUseCaseModel.signInUseCase.invoke().run {
+                _userState.emit(null)
+            }
+        }
+    }
+
+
+    private suspend fun createOrUpdateProfile(
+        name: String,
+        email: String,
+        bio: String? = null,
+        imageUrl: String? = null,
+        password: String,
+    ): Pair<Boolean, String> {
+        val encryptedPassword = encryptString(password, encryptionKey)
+        val result = authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
+            name, email, bio, imageUrl, encryptedPassword
+        )
+        return viewModelScope.async {
+            result
+        }.await()
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {

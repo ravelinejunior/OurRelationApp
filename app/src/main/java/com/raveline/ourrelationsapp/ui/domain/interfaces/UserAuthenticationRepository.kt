@@ -10,5 +10,6 @@ interface UserAuthenticationRepository {
         imageUrl: String? = null,
         encryptedPassword: String? = null,
     ): Pair<Boolean, String>
+    suspend fun signOutUser()
 
 }

@@ -25,6 +25,7 @@ const val homeGraphRoute = "HomeGraph"
 fun NavGraphBuilder.homeGraph(
     onNavigateToLogin: () -> Unit,
     onNavigateToSignUp: () -> Unit,
+    onNavigateToSignOut: () -> Unit,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSwipe: (UserDataModel) -> Unit,
 ) {
@@ -33,7 +34,9 @@ fun NavGraphBuilder.homeGraph(
         route = homeGraphRoute
     ) {
         chatListRoute()
-        profileNavigationRoute()
+        profileNavigationRoute(
+            onSignOut = onNavigateToSignOut
+        )
         singleChatNavigationRoute()
         swipeNavigationRoute(
             onNavigateToSwipe

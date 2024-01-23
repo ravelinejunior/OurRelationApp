@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.splashScreen.SplashScreen
-import com.raveline.ourrelationsapp.ui.viewmodel.OurRelationsViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 const val splashNavigationRoute = "splash_route"
 
@@ -42,7 +42,7 @@ fun NavGraphBuilder.splashRoute(
             )
         },
     ) {
-        val viewModel: OurRelationsViewModel = hiltViewModel()
+        val viewModel: AuthenticationViewModel = hiltViewModel()
         SplashScreen(
             viewModel = viewModel,
             onNavigateToHome = onNavigateToHome,
