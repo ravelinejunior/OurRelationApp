@@ -22,7 +22,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -67,13 +66,13 @@ fun LoginScreen(
     onNavigateToSignUp: () -> Unit,
     content: @Composable () -> Unit
 ) {
-        LoginScreenContent(
-            getVideoUri(activity),
-            viewModel = viewModel,
-            onNavigateToHome = onNavigateToHome,
-            onNavigateToSignUp = onNavigateToSignUp,
-            content = content
-        )
+    LoginScreenContent(
+        getVideoUri(activity),
+        viewModel = viewModel,
+        onNavigateToHome = onNavigateToHome,
+        onNavigateToSignUp = onNavigateToSignUp,
+        content = content
+    )
 
 }
 
@@ -103,12 +102,11 @@ fun LoginScreenContent(
     }
 
     LaunchedEffect(viewModel.userState) {
-           viewModel.userState.collect { user ->
-            if (user != null) {
+        viewModel.userState.collect { user ->
+            if (user != null && user != UserDataModel()) {
                 onNavigateToHome(viewModel.userState.value!!)
             }
         }
-
     }
 
     NotificationMessage(viewModel = viewModel)

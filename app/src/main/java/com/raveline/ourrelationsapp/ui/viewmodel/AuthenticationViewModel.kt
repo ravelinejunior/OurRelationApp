@@ -34,7 +34,7 @@ class AuthenticationViewModel @Inject constructor(
     val popUpNotification = mutableStateOf<StateEvent<String>?>(StateEvent(""))
     val inProgress = mutableStateOf(false)
 
-    private val _userState = MutableStateFlow<UserDataModel?>(null)
+    private val _userState = MutableStateFlow<UserDataModel?>(UserDataModel())
     val userState: StateFlow<UserDataModel?> get() = _userState
 
     fun onSignIn(email: String, password: String) {
@@ -87,7 +87,6 @@ class AuthenticationViewModel @Inject constructor(
                 if (userStored.first) {
                     // user created
                     isUserLoggedIn()
-                    inProgress.value = false
                 } else {
                     handleException(customMessage = userStored.second)
                 }
@@ -116,6 +115,7 @@ class AuthenticationViewModel @Inject constructor(
                                 userModel
                             }
                             it.resume(Pair(true, userModel))
+                            inProgress.value = false
                         }
                     }
             } else {

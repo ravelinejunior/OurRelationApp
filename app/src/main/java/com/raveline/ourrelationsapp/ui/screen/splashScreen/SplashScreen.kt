@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -33,7 +34,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    viewModel: AuthenticationViewModel,
+    viewModel: AuthenticationViewModel = viewModel(),
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
@@ -48,7 +49,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         viewModel.isUserLoggedIn()
         delay(1500L)
-        if (viewModel.userState.value != null) {
+        if (viewModel.userState.value != null && viewModel.userState.value != UserDataModel()) {
             onNavigateToHome(viewModel.userState.value!!)
         } else {
             onNavigateToLogin()

@@ -37,7 +37,6 @@ fun OurRelationsNavHost(
                 )
             },
             onNavigateToHome = { user ->
-
                 navController.currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, user)
                 navController.navigateToSwipe(
                     navOptions {

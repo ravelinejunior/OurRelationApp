@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import com.raveline.ourrelationsapp.ui.screen.profileScreen.ProfileScreen
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
-const val profileNavigationRoute = "ProfileRoute"
+const val profileNavigationRoute = "profile_route"
 
 fun NavGraphBuilder.profileNavigationRoute(
     onSignOut: () -> Unit
