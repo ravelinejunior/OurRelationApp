@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.toObject
+import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
 import com.raveline.ourrelationsapp.ui.common.utils.encryptString
 import com.raveline.ourrelationsapp.ui.common.utils.encryptionKey
 import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
@@ -16,17 +17,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    private val authenticationUseCaseModel: AuthenticationUseCaseModel
+    private val authenticationUseCaseModel: AuthenticationUseCaseModel,
 ) : ViewModel() {
 
     private val TAG = "OurRelationsViewModel"
@@ -35,7 +35,11 @@ class AuthenticationViewModel @Inject constructor(
     val inProgress = mutableStateOf(false)
 
     private val _userState = MutableStateFlow<UserDataModel?>(UserDataModel())
-    val userState: StateFlow<UserDataModel?> get() = _userState
+    val userState = _userState.asStateFlow()
+
+    init {
+        isUserLoggedIn()
+    }
 
     fun onSignIn(email: String, password: String) {
         if (email.isEmpty() or password.isEmpty()) {
@@ -67,14 +71,9 @@ class AuthenticationViewModel @Inject constructor(
         viewModelScope.launch {
             val singUpUserComplete =
                 authenticationUseCaseModel.signUpUseCase.invoke(
-                    userName.trim()
-                        .replaceFirstChar {
-                            if (it.isLowerCase())
-                                it.titlecase(Locale.getDefault())
-                            else it.toString()
-                        },
-                    email.trim(),
-                    password.trim()
+                    customCapitalize(userName),
+                    email,
+                    password
                 )
             if (singUpUserComplete.first) {
                 val encrypt = encryptString(password, encryptionKey)

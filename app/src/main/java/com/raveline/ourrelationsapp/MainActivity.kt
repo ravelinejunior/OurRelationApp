@@ -36,6 +36,7 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
 import com.raveline.ourrelationsapp.ui.navigation.routes.chatListNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.loginNavigationRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.profileIntroNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.profileNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.signupNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
@@ -102,7 +103,7 @@ fun OurRelationsApp(
     val selectedItem by remember(currentDestination) {
 
         val item = when (currentRoute) {
-            profileNavigationRoute -> OurRelationsAppBarItem.ProfileItemBar
+            profileIntroNavigationRoute -> OurRelationsAppBarItem.ProfileItemBar
             swipeNavigationRoute -> OurRelationsAppBarItem.SwipeItemBar
             chatListNavigationRoute -> OurRelationsAppBarItem.ChatListItemBar
             else -> OurRelationsAppBarItem.SwipeItemBar
@@ -146,7 +147,6 @@ fun OurRelationsApp(
             OurRelationsNavHost(navController = navController)
         }
     }
-
 
 }
 

@@ -1,28 +1,27 @@
 package com.raveline.ourrelationsapp.ui.data.repository_impl
 
 import android.util.Log
-import androidx.compose.ui.text.capitalize
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
 import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
 import com.raveline.ourrelationsapp.ui.common.utils.userNameFirebaseKey
 import com.raveline.ourrelationsapp.ui.domain.interfaces.UserAuthenticationRepository
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class UserAuthenticationRepositoryImpl @Inject constructor(
     private val firebaseAuthentication: FirebaseAuth,
-    private val fireStoreDatabase: FirebaseFirestore
+    private val fireStoreDatabase: FirebaseFirestore,
 ) : UserAuthenticationRepository {
     private val TAG: String = "UserAuthenticationRepositoryImpl"
 
     override suspend fun signUpUser(
         userName: String,
         email: String,
-        password: String
+        password: String,
     ): Pair<Boolean, String> =
         suspendCoroutine { continuation ->
             fireStoreDatabase.collection(userFirebaseDatabaseCollection)
@@ -84,12 +83,13 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
         imageUrl: String?,
         encryptedPassword: String?,
         gender: String?,
-        genderPreference: String?
+        genderPreference: String?,
     ): Pair<Boolean, String> = suspendCoroutine { continuation ->
         val uid = firebaseAuthentication.currentUser?.uid
         val userData = UserDataModel(
             userId = uid,
-            userName = name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+            name = customCapitalize(name.toString()),
+            userName = customCapitalize(name.toString()),
             email = email,
             bio = bio,
             imageUrl = imageUrl,

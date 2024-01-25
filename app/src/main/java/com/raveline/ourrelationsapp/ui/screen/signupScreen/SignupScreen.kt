@@ -111,7 +111,7 @@ fun SignupScreen(
 
     LaunchedEffect(viewModel.userState) {
         viewModel.userState.collect { user ->
-            if (user != null) {
+            if (user != null && user != UserDataModel()) {
                 onNavigateToHome(viewModel.userState.value!!)
             }
         }

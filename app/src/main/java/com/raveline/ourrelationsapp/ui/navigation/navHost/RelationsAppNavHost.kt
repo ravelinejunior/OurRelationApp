@@ -12,7 +12,6 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSignup
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
 import com.raveline.ourrelationsapp.ui.navigation.routes.userDetailsKey
 
-
 @Composable
 fun OurRelationsNavHost(
     navController: NavHostController
@@ -56,7 +55,12 @@ fun OurRelationsNavHost(
                 navController.previousBackStackEntry?.savedStateHandle?.get<UserDataModel>(
                     userDetailsKey
                 )
-            }
+                navController.navigateToSwipe(
+                    navOptions {
+                        launchSingleTop = true
+                    },
+                )
+            },
         )
     }
 }

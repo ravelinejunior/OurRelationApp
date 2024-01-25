@@ -56,7 +56,10 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.background
             )
     ) {
-
+        ProfileScreenContent(
+            authenticationViewModel = authenticationViewModel,
+            onSignOut = onSignOut
+        )
     }
 }
 

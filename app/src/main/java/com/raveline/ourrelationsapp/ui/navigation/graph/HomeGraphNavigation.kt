@@ -10,8 +10,9 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.chatListNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.chatListRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.loginNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToChatList
-import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToProfile
+import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToIntroProfile
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
+import com.raveline.ourrelationsapp.ui.navigation.routes.profileIntroNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.profileNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.signupRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.singleChatNavigationRoute
@@ -35,7 +36,7 @@ fun NavGraphBuilder.homeGraph(
     ) {
         chatListRoute()
         profileNavigationRoute(
-            onSignOut = onNavigateToSignOut
+            onSignOut = onNavigateToSignOut,
         )
         singleChatNavigationRoute()
         swipeNavigationRoute(
@@ -62,7 +63,7 @@ fun NavController.navigateSingleTopWithPopUpTo(
     val (route, navigate) = when (item) {
 
         OurRelationsAppBarItem.ProfileItemBar -> Pair(
-            profileNavigationRoute, ::navigateToProfile
+            profileIntroNavigationRoute, ::navigateToIntroProfile
         )
 
         OurRelationsAppBarItem.SwipeItemBar -> Pair(

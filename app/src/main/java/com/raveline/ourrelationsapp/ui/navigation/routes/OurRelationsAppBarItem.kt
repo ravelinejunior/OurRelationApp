@@ -15,7 +15,7 @@ sealed class OurRelationsAppBarItem(
     data object ProfileItemBar : OurRelationsAppBarItem(
         label = "Profile",
         icon = Icons.Rounded.PersonOutline,
-        destination = profileNavigationRoute,
+        destination = profileIntroNavigationRoute,
         position = 0,
     )
 
