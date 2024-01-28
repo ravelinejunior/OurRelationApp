@@ -27,6 +27,7 @@ fun NavGraphBuilder.homeGraph(
     onNavigateToLogin: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToSignOut: () -> Unit,
+    onNavigateToEditProfile: (UserDataModel) -> Unit,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSwipe: (UserDataModel) -> Unit,
 ) {
@@ -37,6 +38,7 @@ fun NavGraphBuilder.homeGraph(
         chatListRoute()
         profileNavigationRoute(
             onSignOut = onNavigateToSignOut,
+            navigateToEditProfile = onNavigateToEditProfile
         )
         singleChatNavigationRoute()
         swipeNavigationRoute(

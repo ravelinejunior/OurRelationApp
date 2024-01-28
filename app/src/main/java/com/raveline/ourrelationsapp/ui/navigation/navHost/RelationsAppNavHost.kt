@@ -8,6 +8,7 @@ import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.navigation.graph.homeGraph
 import com.raveline.ourrelationsapp.ui.navigation.graph.homeGraphRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToLogin
+import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToProfile
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSignup
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSwipe
 import com.raveline.ourrelationsapp.ui.navigation.routes.userDetailsKey
@@ -52,15 +53,21 @@ fun OurRelationsNavHost(
                 )
             },
             onNavigateToSwipe = { _ ->
-                navController.previousBackStackEntry?.savedStateHandle?.get<UserDataModel>(
-                    userDetailsKey
-                )
+                val user =
+                    navController.previousBackStackEntry?.savedStateHandle?.get<UserDataModel>(
+                        userDetailsKey
+                    )
                 navController.navigateToSwipe(
                     navOptions {
                         launchSingleTop = true
                     },
                 )
             },
+            onNavigateToEditProfile = {
+                navController.navigateToProfile(
+                    userData = it
+                )
+            }
         )
     }
 }

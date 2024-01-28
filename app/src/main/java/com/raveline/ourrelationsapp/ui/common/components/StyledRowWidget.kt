@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
+import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 
 @Composable
 fun StyledRow(
@@ -35,21 +36,27 @@ fun StyledRow(
     icon: ImageVector,
     color: Color = MaterialTheme.colorScheme.primary,
     label: String,
-    onSelect: () -> Unit = {}
+    userDataModel: UserDataModel?=null,
+    onSelect: () -> Unit = {},
+    onSelectUser: (UserDataModel) -> Unit = {},
 ) {
     Box(
         modifier = modifier
             .padding(12.dp)
             .clip(shape = RoundedCornerShape(16.dp))
+            .clickable {
+                if (userDataModel != null){
+                    onSelectUser(userDataModel)
+                }else{
+                    onSelect()
+                }
+            }
     ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
                 .background(color = Color.LightGray.copy(alpha = 0.1f))
-                .padding(16.dp)
-                .clickable {
-                    onSelect()
-                },
+                .padding(16.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {

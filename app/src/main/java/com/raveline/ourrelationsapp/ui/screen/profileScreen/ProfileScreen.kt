@@ -3,14 +3,12 @@ package com.raveline.ourrelationsapp.ui.screen.profileScreen
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,14 +19,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,116 +31,65 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.raveline.ourrelationsapp.ui.common.components.CommonDivider
 import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
 import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
+import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
+import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
+import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsAppBar
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 @Composable
 fun ProfileScreen(
-    authenticationViewModel: AuthenticationViewModel,
-    onSignOut: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
-    ) {
-        ProfileScreenContent(
-            authenticationViewModel = authenticationViewModel,
-            onSignOut = onSignOut
-        )
-    }
-}
-
-@Composable
-fun ProfileScreenContent(
-    authenticationViewModel: AuthenticationViewModel,
-    onSignOut: () -> Unit
-) {
-
-    LaunchedEffect(authenticationViewModel.userState) {
-        authenticationViewModel.signOut()
-        authenticationViewModel.userState.collect { user ->
-            if (user == null) {
-                onSignOut()
-            }
-        }
-    }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = "Profile",
-            style = TextStyle.Default
-        )
-    }
-}
-
-@Composable
-fun ProfileScreen(
-    navController: NavController,
     vm: AuthenticationViewModel,
     userData: UserDataModel?
 ) {
-    val inProgress = vm.inProgress.value
-    if (inProgress)
-        CommonProgressSpinner()
-    else {
-        val g = if (userData?.gender.isNullOrEmpty()) "MALE"
-        else userData!!.gender!!.uppercase()
-        val gPref = if (userData?.genderPreference.isNullOrEmpty()) "FEMALE"
-        else userData!!.genderPreference!!.uppercase()
-        var name by rememberSaveable { mutableStateOf(userData?.name ?: "") }
-        var username by rememberSaveable { mutableStateOf(userData?.userName ?: "") }
-        var bio by rememberSaveable { mutableStateOf(userData?.bio ?: "") }
-        var gender by rememberSaveable { mutableStateOf(GenderEnum.valueOf(g)) }
-        var genderPreference by rememberSaveable { mutableStateOf(GenderEnum.valueOf(gPref)) }
+    val g = if (userData?.gender.isNullOrEmpty()) GenderEnum.OTHER.name
+    else userData!!.gender!!.uppercase()
+    val gPref = if (userData?.genderPreference.isNullOrEmpty()) "FEMALE"
+    else userData!!.genderPreference!!.uppercase()
+    var name by rememberSaveable { mutableStateOf(userData?.name ?: "") }
+    var username by rememberSaveable { mutableStateOf(userData?.userName ?: "") }
+    var bio by rememberSaveable { mutableStateOf(userData?.bio ?: "") }
+    var gender by rememberSaveable { mutableStateOf(GenderEnum.valueOf(g)) }
+    var genderPreference by rememberSaveable { mutableStateOf(GenderEnum.valueOf(gPref)) }
 
-        val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
-        Column {
-            ProfileContent(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(8.dp),
-                vm = vm,
-                name = name,
-                username = username,
-                bio = bio,
-                gender = gender,
-                genderPreference = genderPreference,
-                onNameChange = { name = it },
-                onUsernameChange = { username = it },
-                onBioChange = { bio = it },
-                onGenderChange = { gender = it },
-                onGenderPreferenceChange = { genderPreference = it },
-                onSave = {
-                    //vm.updateProfileData(name, username, bio, gender, genderPreference)
-                },
-                onBack = {
-                    // navigateTo(navController, DestinationScreen.Swipe.route)
-                },
-                onLogout = {
-                    //vm.onLogout()
-                    // navigateTo(navController, DestinationScreen.Login.route)
-                },
-                userData = UserDataModel()
-            )
-            /*
-                        BottomNavigationMenu(
-                            selectedItem = BottomNavigationItem.PROFILE,
-                            navController = navController
-                        )*/
-        }
+    Column {
+        ProfileContent(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(scrollState)
+                .padding(8.dp),
+            vm = vm,
+            name = name,
+            username = username,
+            bio = bio,
+            gender = gender,
+            genderPreference = genderPreference,
+            onNameChange = { name = it },
+            onUsernameChange = { username = it },
+            onBioChange = { bio = it },
+            onGenderChange = { gender = it },
+            onGenderPreferenceChange = { genderPreference = it },
+            onSave = {
+            },
+            onBack = {
+            },
+            onLogout = {
+
+            },
+            userData = UserDataModel()
+        )
+
+        OurRelationsAppBar(
+            selectedItem = OurRelationsAppBarItem.ProfileItemBar.position,
+            items = bottomAppBarItems,
+            mItem = OurRelationsAppBarItem.ProfileItemBar
+        )
     }
 }
 
@@ -182,11 +126,11 @@ fun ProfileContent(
             Text(text = "Save", modifier = Modifier.clickable { onSave.invoke() })
         }
 
-        //CommonDivider()
+        CommonDivider()
 
         ProfileImage(imageUrl = imageUrl, vm = vm)
 
-        //CommonDivider()
+        CommonDivider()
 
         Row(
             modifier = Modifier
@@ -286,7 +230,7 @@ fun ProfileContent(
             }
         }
 
-        //CommonDivider()
+        CommonDivider()
 
         Row(
             modifier = Modifier
@@ -333,7 +277,7 @@ fun ProfileContent(
             }
         }
 
-        //CommonDivider()
+        CommonDivider()
 
         Row(
             modifier = Modifier
@@ -353,7 +297,7 @@ fun ProfileImage(imageUrl: String?, vm: AuthenticationViewModel) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
-        // uri?.let { vm.uploadProfileImage(uri) }
+
     }
 
     Box(modifier = Modifier.height(IntrinsicSize.Min)) {

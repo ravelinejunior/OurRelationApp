@@ -23,18 +23,21 @@ import com.raveline.ourrelationsapp.ui.common.components.CommonSpacer
 import com.raveline.ourrelationsapp.ui.common.components.StyledRow
 import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 @Composable
 fun ProfileIntro(
-    viewModel: AuthenticationViewModel,
     userDataModel: UserDataModel?,
     onSignOut: () -> Unit,
+    navigateToEditProfile: (UserDataModel) -> Unit,
 ) {
 
     ProfileIntroComponent(
         userDataModel = userDataModel,
-        onSignOut = onSignOut
+        onSignOut = onSignOut,
+        navigateToEditProfile = {
+            navigateToEditProfile(it)
+        }
+
     )
 }
 
@@ -42,6 +45,7 @@ fun ProfileIntro(
 fun ProfileIntroComponent(
     userDataModel: UserDataModel?,
     onSignOut: () -> Unit,
+    navigateToEditProfile: (UserDataModel) -> Unit
 ) {
 
     Surface(
@@ -73,6 +77,10 @@ fun ProfileIntroComponent(
                 icon = Icons.Rounded.Edit,
                 label = "Edit Profile",
                 color = MaterialTheme.colorScheme.primary,
+                userDataModel = userDataModel,
+                onSelectUser = {
+                    navigateToEditProfile(userDataModel!!)
+                }
             )
             StyledRow(icon = Icons.Rounded.Key, label = "Change Password")
             StyledRow(icon = Icons.Rounded.Info, label = "Information")
@@ -101,7 +109,9 @@ fun ProfileIntroComponentPreview() {
         onSignOut = {
 
         }
-    )
+    ) {
+
+    }
 }
 
 

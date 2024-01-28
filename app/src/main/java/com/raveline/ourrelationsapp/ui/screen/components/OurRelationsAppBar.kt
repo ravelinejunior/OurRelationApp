@@ -70,35 +70,7 @@ fun OurRelationsAppBar(
                     indicatorColor = MaterialTheme.colorScheme.background,
                 )
             )
-        }/*
-
-        items.forEach { item ->
-            val label = item.label
-            val icon = item.icon
-            NavigationBarItem(
-                label = {
-                    Text(label)
-                },
-                selected = mItem.label == label,
-                icon = {
-                    if (mItem.label == label && item.destination == swipeNavigationRoute) Icon(
-                        imageVector = Icons.Rounded.Favorite,
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = label
-                    ) else Icon(imageVector = icon, contentDescription = label)
-                },
-                onClick = {
-                    onItemChanged(item)
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    unselectedIconColor = MaterialTheme.colorScheme.primary,
-                    unselectedTextColor = MaterialTheme.colorScheme.primary,
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    indicatorColor = MaterialTheme.colorScheme.background,
-                )
-            )
-        }*/
+        }
     }
 }
 
@@ -107,6 +79,10 @@ fun OurRelationsAppBar(
 @Composable
 fun PreviewOurRelationsAppBar() {
     OurRelationsAppTheme {
-        OurRelationsAppBar(mItem = bottomAppBarItems[1], items = bottomAppBarItems, selectedItem = 1)
+        OurRelationsAppBar(
+            mItem = bottomAppBarItems[1],
+            items = bottomAppBarItems,
+            selectedItem = 1,
+        )
     }
 }

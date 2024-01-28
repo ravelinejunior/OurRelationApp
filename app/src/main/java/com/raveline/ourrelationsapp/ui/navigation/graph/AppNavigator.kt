@@ -1,19 +1,14 @@
-package com.raveline.ourrelationsapp
+package com.raveline.ourrelationsapp.ui.navigation.graph
 
-import android.content.res.Configuration
-import android.os.Bundle
+import android.os.Build
 import android.util.Log
-import android.view.Window
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,16 +16,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.raveline.ourrelationsapp.ui.navigation.graph.navigateSingleTopWithPopUpTo
 import com.raveline.ourrelationsapp.ui.navigation.navHost.OurRelationsNavHost
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
@@ -42,49 +31,32 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.signupNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsAppBar
-import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeScreen
-import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-private val TAG: String = MainActivity::class.java.simpleName
+internal const val articleModelKey = "article"
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        installSplashScreen()
-        setContent {
-            OurRelationsAppTheme {
-                val systemUiController = rememberSystemUiController()
-                val isSystemInDarkMode = isSystemInDarkTheme()
-                val window: Window = this.window
-                window.navigationBarColor = MaterialTheme.colorScheme.background.toArgb()
 
-                if (isSystemInDarkMode) {
-                    systemUiController.setSystemBarsColor(
-                        color = MaterialTheme.colorScheme.primaryContainer
-                    )
-                } else {
-                    systemUiController.setSystemBarsColor(
-                        color = Color.Transparent
-                    )
-                }
+/**
+ * `NewsNavigator` is a composable function that manages the navigation of the news application.
+ * It's annotated with `@Composable`, indicating that it's a composable function that describes part of the UI.
+ *
+ * @property bottomNavigationItems A list of items to be displayed in the bottom navigation bar.
+ * @property navController A `NavController` that manages app navigation.
+ * @property backStackState The current state of the navigation back stack.
+ * @property selectedItem The index of the currently selected item in the bottom navigation bar.
+ * @property isBottomBarVisible A boolean value that determines whether the bottom navigation bar should be visible.
+ *
+ * @method NewsNavigator This function sets up the navigation for the application.
+ * @method Scaffold This function provides a framework that materializes the Material Design specification.
+ * @method NavHost This function sets up a navigation graph within the application.
+ */
 
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    OurRelationsApp()
-                }
-            }
-        }
-    }
-}
+private val TAG: String = "TAGAppNavigator"
 
+@RequiresApi(Build.VERSION_CODES.O)
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
-fun OurRelationsApp(
-    navController: NavHostController = rememberNavController()
-) {
+fun NewsNavigator() {
+    val navController = rememberNavController()
     // See the change in navigation
     LaunchedEffect(Unit) {
         navController.addOnDestinationChangedListener { _, _, _ ->
@@ -148,14 +120,8 @@ fun OurRelationsApp(
             OurRelationsNavHost(navController = navController)
         }
     }
-
 }
 
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_TYPE_NORMAL)
-@Composable
-fun GreetingPreview() {
-    OurRelationsAppTheme {
-        SwipeScreen { _ -> }
-    }
-}
+
+

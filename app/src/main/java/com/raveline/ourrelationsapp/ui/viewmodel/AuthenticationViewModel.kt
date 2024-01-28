@@ -118,6 +118,7 @@ class AuthenticationViewModel @Inject constructor(
                         }
                     }
             } else {
+                inProgress.value = false
                 it.resume(Pair(false, null))
             }
         }

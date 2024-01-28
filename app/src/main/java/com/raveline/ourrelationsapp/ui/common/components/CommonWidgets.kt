@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +68,15 @@ fun NotificationMessage(viewModel: AuthenticationViewModel) {
     if (!notifyMessage.isNullOrEmpty()) {
         Toast.makeText(LocalContext.current, notifyMessage, Toast.LENGTH_SHORT).show()
     }
+}
+
+@Composable
+fun CommonDivider() {
+    Divider(
+        color = Color.LightGray,
+        thickness = 1.dp,
+        modifier = Modifier.alpha(0.3f).padding()
+    )
 }
 
 @Composable
