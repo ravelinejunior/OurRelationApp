@@ -3,7 +3,6 @@ package com.raveline.ourrelationsapp.ui.navigation.graph
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.raveline.ourrelationsapp.ui.navigation.navHost.OurRelationsNavHost
+import com.raveline.ourrelationsapp.ui.navigation.navHost.OurRelationsNavigationHost
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
 import com.raveline.ourrelationsapp.ui.navigation.routes.chatListNavigationRoute
@@ -30,9 +29,8 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.profileNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.signupNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
-import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsAppBar
-
-internal const val articleModelKey = "article"
+import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsBottomAppBar
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 
 /**
@@ -53,9 +51,8 @@ internal const val articleModelKey = "article"
 private val TAG: String = "TAGAppNavigator"
 
 @RequiresApi(Build.VERSION_CODES.O)
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
-fun NewsNavigator() {
+fun NewsNavigator(viewModel: AuthenticationViewModel) {
     val navController = rememberNavController()
     // See the change in navigation
     LaunchedEffect(Unit) {
@@ -96,12 +93,15 @@ fun NewsNavigator() {
         modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer),
         bottomBar = {
             if (isBottomBarVisible) {
-                OurRelationsAppBar(
+                OurRelationsBottomAppBar(
                     mItem = selectedItem,
                     items = bottomAppBarItems,
                     selectedItem = selectedItem.position,
                     onItemChanged = { item ->
-                        navController.navigateSingleTopWithPopUpTo(item)
+                        navController.navigateSingleTopWithPopUpTo(
+                            item,
+                            viewModel.userState.value
+                        )
                     },
                     modifier =
                     Modifier
@@ -117,7 +117,7 @@ fun NewsNavigator() {
     ) {
 
         Box(modifier = Modifier.padding(it)) {
-            OurRelationsNavHost(navController = navController)
+            OurRelationsNavigationHost(navController = navController)
         }
     }
 }

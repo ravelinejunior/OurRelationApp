@@ -49,6 +49,7 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
 import com.raveline.ourrelationsapp.ui.common.components.NotificationMessage
+import com.raveline.ourrelationsapp.ui.common.components.NotificationMessageLogin
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
@@ -56,12 +57,13 @@ import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPl
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.SignInViewModel
 
 
 @Composable
 fun LoginScreen(
     activity: Activity,
-    viewModel: AuthenticationViewModel,
+    viewModel: SignInViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSignUp: () -> Unit,
     content: @Composable () -> Unit
@@ -81,7 +83,7 @@ fun LoginScreen(
 @Composable
 fun LoginScreenContent(
     videoUri: Uri,
-    viewModel: AuthenticationViewModel,
+    viewModel: SignInViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSignUp: () -> Unit,
     content: @Composable () -> Unit
@@ -109,7 +111,7 @@ fun LoginScreenContent(
         }
     }
 
-    NotificationMessage(viewModel = viewModel)
+    NotificationMessageLogin(viewModel = viewModel)
 
     DisposableEffect(
         AndroidView(

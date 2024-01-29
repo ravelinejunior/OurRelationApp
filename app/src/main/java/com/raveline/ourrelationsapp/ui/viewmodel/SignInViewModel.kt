@@ -10,37 +10,51 @@ import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
-class AuthenticationViewModel @Inject constructor(
-    private val authenticationUseCaseModel: AuthenticationUseCaseModel,
+class SignInViewModel @Inject constructor(
+    private val useCaseModel: AuthenticationUseCaseModel
 ) : ViewModel() {
-
-    private val TAG = AuthenticationViewModel::class.java.simpleName
-
+    private val TAG: String = SignInViewModel::class.java.simpleName
     val popUpNotification = mutableStateOf<StateEvent<String>?>(StateEvent(""))
     val inProgress = mutableStateOf(false)
 
     private val _userState = MutableStateFlow<UserDataModel?>(UserDataModel())
     val userState = _userState.asStateFlow()
 
-    val firebaseAuth = authenticationUseCaseModel.firebaseAuth
+    val firebaseAuthentication = useCaseModel.firebaseAuth
+    val fireStoreDatabase = useCaseModel.fireStore
 
-    init {
-        isUserLoggedIn()
+    fun onSignIn(email: String, password: String) {
+        if (email.isEmpty() or password.isEmpty()) {
+            handleException(customMessage = "All fields must be filled!")
+            return
+        }
+
+        inProgress.value = true
+
+        viewModelScope.launch {
+            val signInComplete =
+                useCaseModel.signInUseCase.invoke(email.trim(), password.trim())
+            if (signInComplete.first) {
+                isUserLoggedIn()
+                inProgress.value = false
+            } else {
+                handleException(customMessage = signInComplete.second)
+            }
+        }
+
     }
 
-    fun isUserLoggedIn() = viewModelScope.launch(Main) {
-        val firebaseAuthentication = authenticationUseCaseModel.firebaseAuth
-        val fireStoreDatabase = authenticationUseCaseModel.fireStore
+
+    fun isUserLoggedIn() = viewModelScope.launch(Dispatchers.Main) {
         suspendCoroutine<Pair<Boolean, UserDataModel?>> {
             if (firebaseAuthentication.currentUser != null) {
                 fireStoreDatabase.collection(userFirebaseDatabaseCollection)
@@ -51,13 +65,9 @@ class AuthenticationViewModel @Inject constructor(
                         }
                         if (value != null) {
                             val userModel = value.toObject<UserDataModel>()
-                            _userState.update { userUpdate ->
-                                Log.i(TAG, "isUserLoggedIn: ${userUpdate?.userName} logged in")
-                                it.resume(Pair(true, userModel))
-                                inProgress.value = false
-                                userModel
-                            }
-
+                            _userState.value = userModel
+                            it.resume(Pair(true, userModel))
+                            inProgress.value = false
                         }
                     }
             } else {
@@ -68,12 +78,12 @@ class AuthenticationViewModel @Inject constructor(
 
     }
 
-    fun signOut() {
-        viewModelScope.launch {
-            authenticationUseCaseModel.signInUseCase.invoke().run {
-                _userState.emit(null)
-            }
-        }
+    private fun handleException(exception: Exception? = null, customMessage: String = "") {
+        Log.e(TAG, "Handle Exception ${exception?.message}", exception)
+        exception?.stackTrace
+        val errorMessage = exception?.localizedMessage ?: ""
+        val message = if (customMessage.isEmpty()) errorMessage else "$customMessage: $errorMessage"
+        popUpNotification.value = StateEvent(message)
+        inProgress.value = false
     }
-
 }

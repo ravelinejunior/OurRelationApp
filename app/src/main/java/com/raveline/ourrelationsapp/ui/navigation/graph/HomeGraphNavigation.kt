@@ -19,15 +19,17 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.singleChatNavigationRou
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
-
+import com.raveline.ourrelationsapp.ui.navigation.routes.userDetailsKey
 
 const val homeGraphRoute = "HomeGraph"
 
 fun NavGraphBuilder.homeGraph(
+    navController: NavController,
     onNavigateToLogin: () -> Unit,
     onNavigateToSignUp: () -> Unit,
     onNavigateToSignOut: () -> Unit,
     onNavigateToEditProfile: (UserDataModel) -> Unit,
+    onNavigateToIntroProfile: (UserDataModel) -> Unit,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSwipe: (UserDataModel) -> Unit,
 ) {
@@ -38,11 +40,12 @@ fun NavGraphBuilder.homeGraph(
         chatListRoute()
         profileNavigationRoute(
             onSignOut = onNavigateToSignOut,
-            navigateToEditProfile = onNavigateToEditProfile
+            navigateToEditProfile = onNavigateToEditProfile,
+            navController = navController
         )
         singleChatNavigationRoute()
         swipeNavigationRoute(
-            onNavigateToSwipe
+            onNavigateToSwipe,
         )
         loginNavigationRoute(
             onNavigateToHome = onNavigateToHome,
@@ -59,29 +62,52 @@ fun NavGraphBuilder.homeGraph(
     }
 }
 
+fun navigateToTab(
+    navController: NavController,
+    route: String,
+) {
+    navController.navigate(route) {
+        navController.graph.startDestinationRoute?.let { homeScreen ->
+            popUpTo(homeScreen) {
+                saveState = true
+            }
+            restoreState = true
+            launchSingleTop = true
+        }
+    }
+}
+
+
 fun NavController.navigateSingleTopWithPopUpTo(
     item: OurRelationsAppBarItem,
+    userDataModel: UserDataModel?
 ) {
-    val (route, navigate) = when (item) {
+    when (item) {
+        OurRelationsAppBarItem.ProfileItemBar -> {
+            val navOptions = navOptions {
+                launchSingleTop = true
+                popUpTo(profileIntroNavigationRoute)
+            }
+            currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, userDataModel)
+            navigateToIntroProfile(navOptions,userDataModel)
+        }
 
-        OurRelationsAppBarItem.ProfileItemBar -> Pair(
-            profileIntroNavigationRoute, ::navigateToIntroProfile
-        )
+        OurRelationsAppBarItem.SwipeItemBar -> {
+            val navOptions = navOptions {
+                launchSingleTop = true
+                popUpTo(swipeNavigationRoute)
+            }
+            currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, userDataModel)
+            navigateToSwipe(navOptions,userDataModel)
+        }
 
-        OurRelationsAppBarItem.SwipeItemBar -> Pair(
-            swipeNavigationRoute, ::navigateToSwipe
-        )
-
-        OurRelationsAppBarItem.ChatListItemBar -> Pair(
-            chatListNavigationRoute, ::navigateToChatList
-        )
+        OurRelationsAppBarItem.ChatListItemBar -> {
+            val navOptions = navOptions {
+                launchSingleTop = true
+                popUpTo(chatListNavigationRoute)
+            }
+            navigateToChatList(navOptions)
+        }
     }
-
-    val navOptions = navOptions {
-        launchSingleTop = true
-        popUpTo(route)
-    }
-
-    navigate(navOptions)
 }
 

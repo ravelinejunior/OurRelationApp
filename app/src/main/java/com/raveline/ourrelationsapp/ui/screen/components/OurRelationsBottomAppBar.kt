@@ -26,7 +26,7 @@ import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
 
 
 @Composable
-fun OurRelationsAppBar(
+fun OurRelationsBottomAppBar(
     mItem: OurRelationsAppBarItem,
     modifier: Modifier = Modifier,
     selectedItem: Int,
@@ -79,7 +79,7 @@ fun OurRelationsAppBar(
 @Composable
 fun PreviewOurRelationsAppBar() {
     OurRelationsAppTheme {
-        OurRelationsAppBar(
+        OurRelationsBottomAppBar(
             mItem = bottomAppBarItems[1],
             items = bottomAppBarItems,
             selectedItem = 1,

@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.navigation.graph.homeGraph
 import com.raveline.ourrelationsapp.ui.navigation.graph.homeGraphRoute
+import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToIntroProfile
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToLogin
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToProfile
 import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToSignup
@@ -22,6 +22,7 @@ fun OurRelationsNavHost(
         startDestination = homeGraphRoute
     ) {
         homeGraph(
+            navController = navController,
             onNavigateToLogin = {
                 navController.navigateToLogin(
                     navOptions = navOptions {
@@ -37,34 +38,30 @@ fun OurRelationsNavHost(
                 )
             },
             onNavigateToHome = { user ->
-                navController.currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, user)
                 navController.navigateToSwipe(
-                    navOptions {
-                        launchSingleTop = true
-                    },
+                    userData = user
                 )
             },
             onNavigateToSignOut = {
                 navController.navigateToLogin(
                     navOptions {
                         launchSingleTop = true
-                        launchSingleTop
                     }
                 )
             },
-            onNavigateToSwipe = { _ ->
-                val user =
-                    navController.previousBackStackEntry?.savedStateHandle?.get<UserDataModel>(
-                        userDetailsKey
-                    )
+            onNavigateToSwipe = { user  ->
                 navController.navigateToSwipe(
-                    navOptions {
-                        launchSingleTop = true
-                    },
+                    userData = user
                 )
             },
             onNavigateToEditProfile = {
                 navController.navigateToProfile(
+                    userData = it
+                )
+            },
+            onNavigateToIntroProfile = {
+                navController.currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, it)
+                navController.navigateToIntroProfile(
                     userData = it
                 )
             }

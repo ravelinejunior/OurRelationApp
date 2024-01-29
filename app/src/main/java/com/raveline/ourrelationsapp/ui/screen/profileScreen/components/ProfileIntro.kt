@@ -37,7 +37,6 @@ fun ProfileIntro(
         navigateToEditProfile = {
             navigateToEditProfile(it)
         }
-
     )
 }
 

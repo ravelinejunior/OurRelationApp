@@ -38,7 +38,7 @@ import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
-import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsAppBar
+import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsBottomAppBar
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 @Composable
@@ -85,7 +85,7 @@ fun ProfileScreen(
             userData = UserDataModel()
         )
 
-        OurRelationsAppBar(
+        OurRelationsBottomAppBar(
             selectedItem = OurRelationsAppBarItem.ProfileItemBar.position,
             items = bottomAppBarItems,
             mItem = OurRelationsAppBarItem.ProfileItemBar

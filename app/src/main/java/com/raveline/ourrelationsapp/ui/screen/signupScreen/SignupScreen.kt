@@ -51,14 +51,14 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
-import com.raveline.ourrelationsapp.ui.common.components.NotificationMessage
+import com.raveline.ourrelationsapp.ui.common.components.NotificationMessageSignup
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPlayer
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.SignupViewModel
 
 const val signupNavigationRoute = "SignupRoute"
 
@@ -67,7 +67,7 @@ const val signupNavigationRoute = "SignupRoute"
 @Composable
 fun SignupScreen(
     activity: Activity,
-    viewModel: AuthenticationViewModel,
+    viewModel: SignupViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToLogin: () -> Unit,
     content: @Composable () -> Unit
@@ -96,7 +96,7 @@ fun SignupScreen(
         mutableStateOf("")
     }
 
-    NotificationMessage(viewModel = viewModel)
+    NotificationMessageSignup(viewModel = viewModel)
 
     DisposableEffect(
         AndroidView(

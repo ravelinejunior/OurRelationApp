@@ -1,13 +1,14 @@
 package com.raveline.ourrelationsapp.ui.navigation.navHost
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.navigation.routes.chatListNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.chatListRoute
@@ -21,46 +22,98 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.splashRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.userDetailsKey
 
+import com.raveline.ourrelationsapp.ui.screen.profileScreen.ProfileScreen
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
+
 @Composable
 fun OurRelationsNavigationHost(
     navController: NavHostController,
-    bottomPadding: PaddingValues
 ) {
     NavHost(
         navController = navController,
         startDestination = splashNavigationRoute,
-        modifier = Modifier.padding(bottom = bottomPadding.calculateBottomPadding())
     ) {
 
         splashRoute(
-            onNavigateToHome = {},
-            onNavigateToLogin = {}
+            onNavigateToHome = {
+                navController.navigateToSwipe(
+                    userData = it
+                )
+            },
+            onNavigateToLogin = {
+                navController.navigateToLogin()
+            }
         )
 
         loginNavigationRoute(
-            onNavigateToHome = {},
-            onNavigateToSignUp = {}
+            onNavigateToHome = {
+                navController.navigateToSwipe(
+                    userData = it
+                )
+            },
+            onNavigateToSignUp = {
+                navController.navigateToSignup()
+            }
         )
 
         signupRoute(
-            onNavigateToHome = {},
-            onNavigateToLogin = {}
+            onNavigateToHome = {
+                navController.navigateToSwipe(
+                    userData = it
+                )
+            },
+            onNavigateToLogin = {
+                navController.navigateToLogin()
+            }
         )
 
         swipeNavigationRoute(
-            onNavigateToSwipe = {}
+            onNavigateToSwipe = {
+                navController.navigateToSwipe(
+                    userData = it
+                )
+            },
         )
 
         profileNavigationRoute(
-            onSignOut = {},
-            navigateToEditProfile = {}
+            onSignOut = {
+                navController.navigateToLogin(
+                    navOptions {
+                        launchSingleTop = true
+                    }
+                )
+            },
+            navigateToEditProfile = {
+                navController.navigateToProfile(
+                    userData = it
+                )
+            },
+            navController = navController
         )
+
+        profileEditRoute(navController)
 
         chatListRoute()
 
     }
 }
 
+fun NavGraphBuilder.profileEditRoute(navController: NavController) {
+    composable(
+        profileNavigationRoute,
+    ) {
+        navController.previousBackStackEntry?.savedStateHandle?.get<UserDataModel>(
+            userDetailsKey
+        )?.let {
+            val viewModel: AuthenticationViewModel = hiltViewModel()
+            ProfileScreen(
+                vm = viewModel,
+                userData = it,
+            )
+        }
+    }
+
+}
 
 private fun navigateToTab(navController: NavController, route: String) {
     navController.navigate(route) {
@@ -75,13 +128,18 @@ private fun navigateToTab(navController: NavController, route: String) {
 }
 
 fun NavController.navigateToSwipe(
-    navOptions: NavOptions = androidx.navigation.navOptions { }
+    navOptions: NavOptions = navOptions {
+        launchSingleTop = true
+        restoreState = true
+    },
+    userData: UserDataModel?
 ) {
+    currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, userData)
     navigate(swipeNavigationRoute, navOptions)
 }
 
 
-private fun NavController.navigateToLogin(
+fun NavController.navigateToLogin(
     navOptions: NavOptions? = null
 ) {
     navigate(loginNavigationRoute, navOptions)
@@ -95,7 +153,9 @@ fun NavController.navigateToSignup(
 
 fun NavController.navigateToIntroProfile(
     navOptions: NavOptions? = null,
+    userData: UserDataModel?
 ) {
+    currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, userData)
     navigate(profileIntroNavigationRoute, navOptions)
 }
 
@@ -103,7 +163,8 @@ fun NavController.navigateToProfile(
     navOptions: NavOptions? = null,
     userData: UserDataModel?
 ) {
-    navigate("$profileNavigationRoute/{$userDetailsKey}={$userData}", navOptions)
+    currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, userData)
+    navigate(profileNavigationRoute, navOptions)
 }
 
 private fun NavController.navigateToChatList(

@@ -51,8 +51,10 @@ fun NavGraphBuilder.swipeNavigationRoute(
 }
 
 fun NavController.navigateToSwipe(
-    navOptions: NavOptions = navOptions { }
+    navOptions: NavOptions = navOptions { },
+    userDataModel: UserDataModel?,
 ) {
+    currentBackStackEntry?.savedStateHandle?.set(userDetailsKey, userDataModel)
     navigate(swipeNavigationRoute, navOptions)
 }
 

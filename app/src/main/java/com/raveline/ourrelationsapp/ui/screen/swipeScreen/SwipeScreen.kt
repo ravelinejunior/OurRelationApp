@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SwipeScreen(
-    onNavigateToSwipe: (UserDataModel) -> Unit
+    onNavigateToSwipe: (UserDataModel) -> Unit,
 ) {
     SwipeCards()
 }
@@ -76,8 +76,7 @@ fun SwipeCards() {
                         Color(0xFF2979FF),
                         Color.Black,
                         Color(0xFF2979FF),
-
-                        )
+                    )
                 )
             )
     ) {
