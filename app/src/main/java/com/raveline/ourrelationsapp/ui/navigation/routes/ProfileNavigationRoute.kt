@@ -13,6 +13,7 @@ import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.profileScreen.ProfileScreen
 import com.raveline.ourrelationsapp.ui.screen.profileScreen.components.ProfileIntro
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 const val profileNavigationRoute = "profile_route"
 const val profileIntroNavigationRoute = "profile_intro_route"
@@ -46,7 +47,21 @@ fun NavGraphBuilder.profileNavigationRoute(
                     viewModel.signOut()
                 },
             )
+        } ?: LaunchedEffect(viewModel.userState) {
+            viewModel.userState.collect {
+                if (firebaseAuth.currentUser == null) {
+                    onSignOut()
+                }
+            }
         }
+
+        ProfileIntro(
+            userDataModel = mUser,
+            navigateToEditProfile = navigateToEditProfile,
+            onSignOut = {
+                viewModel.signOut()
+            },
+        )
     }
 
     composable(

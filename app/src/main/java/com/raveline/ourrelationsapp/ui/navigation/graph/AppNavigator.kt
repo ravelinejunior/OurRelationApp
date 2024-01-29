@@ -31,6 +31,7 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsBottomAppBar
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 
 /**
@@ -100,7 +101,7 @@ fun NewsNavigator(viewModel: AuthenticationViewModel) {
                     onItemChanged = { item ->
                         navController.navigateSingleTopWithPopUpTo(
                             item,
-                            viewModel.userState.value
+                            mUser
                         )
                     },
                     modifier =

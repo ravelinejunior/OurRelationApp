@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -54,7 +55,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    OurRelationsApp()
+                    val viewModel = viewModel(modelClass = AuthenticationViewModel::class.java)
+                    OurRelationsApp(viewModel = viewModel)
                 }
             }
         }
@@ -64,7 +66,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun OurRelationsApp(
     navController: NavHostController = rememberNavController(),
-    viewModel: AuthenticationViewModel = hiltViewModel()
+    viewModel: AuthenticationViewModel
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         NewsNavigator(

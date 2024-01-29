@@ -13,6 +13,7 @@ import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -82,9 +83,8 @@ class SignupViewModel @Inject constructor(
                         }
                         if (value != null) {
                             val userModel = value.toObject<UserDataModel>()
-                            _userState.update { userUpdate ->
-                                userUpdate
-                            }
+                            _userState.value = userModel
+                            mUser = userModel!!
 
                             it.resume(Pair(true, userModel))
                             inProgress.value = false

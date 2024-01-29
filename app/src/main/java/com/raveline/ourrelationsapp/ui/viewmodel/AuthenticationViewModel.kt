@@ -51,17 +51,12 @@ class AuthenticationViewModel @Inject constructor(
                         }
                         if (value != null) {
                             val userModel = value.toObject<UserDataModel>()
-                            _userState.update { userUpdate ->
-                                Log.i(TAG, "isUserLoggedIn: ${userUpdate?.userName} logged in")
-                                it.resume(Pair(true, userModel))
-                                inProgress.value = false
-                                userModel
-                            }
-
+                            _userState.value = userModel
+                            mUser = userModel!!
+                            it.resume(Pair(true, userModel))
                         }
                     }
             } else {
-                inProgress.value = false
                 it.resume(Pair(false, null))
             }
         }
@@ -72,8 +67,13 @@ class AuthenticationViewModel @Inject constructor(
         viewModelScope.launch {
             authenticationUseCaseModel.signInUseCase.invoke().run {
                 _userState.emit(null)
+                mUser = null
             }
         }
+    }
+
+    companion object {
+        var mUser: UserDataModel? = null
     }
 
 }

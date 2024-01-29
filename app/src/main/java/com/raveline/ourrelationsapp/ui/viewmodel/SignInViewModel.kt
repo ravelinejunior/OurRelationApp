@@ -9,6 +9,7 @@ import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollecti
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,8 +67,9 @@ class SignInViewModel @Inject constructor(
                         if (value != null) {
                             val userModel = value.toObject<UserDataModel>()
                             _userState.value = userModel
-                            it.resume(Pair(true, userModel))
+                            mUser = userModel!!
                             inProgress.value = false
+                            it.resume(Pair(true, userModel))
                         }
                     }
             } else {
