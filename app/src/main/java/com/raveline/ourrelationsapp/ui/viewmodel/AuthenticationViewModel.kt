@@ -10,9 +10,7 @@ import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.DisposableHandle
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.disposeOnCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -34,6 +32,7 @@ class AuthenticationViewModel @Inject constructor(
     val userState = _userState.asStateFlow()
 
     val firebaseAuth = authenticationUseCaseModel.firebaseAuth
+    private val fireStoreDatabase = authenticationUseCaseModel.fireStore
 
     init {
         isUserLoggedIn()
@@ -41,12 +40,11 @@ class AuthenticationViewModel @Inject constructor(
 
     @OptIn(InternalCoroutinesApi::class)
     private fun isUserLoggedIn() = viewModelScope.launch(Main) {
-        val firebaseAuthentication = authenticationUseCaseModel.firebaseAuth
-        val fireStoreDatabase = authenticationUseCaseModel.fireStore
+
         suspendCancellableCoroutine<Pair<Boolean, UserDataModel?>> {
-            if (firebaseAuthentication.currentUser != null) {
+            if (firebaseAuth.currentUser != null) {
                 fireStoreDatabase.collection(userFirebaseDatabaseCollection)
-                    .document(firebaseAuthentication.currentUser?.uid.toString())
+                    .document(firebaseAuth.currentUser?.uid.toString())
                     .addSnapshotListener { value, error ->
                         if (error != null) {
                             it.resume(Pair(false, null))
@@ -71,10 +69,9 @@ class AuthenticationViewModel @Inject constructor(
 
     fun signOut() {
         viewModelScope.launch {
-            authenticationUseCaseModel.signInUseCase.invoke().run {
-                _userState.emit(null)
-                mUser = null
-            }
+            authenticationUseCaseModel.signInUseCase.invoke()
+            _userState.value = null
+            mUser = null
         }
     }
 

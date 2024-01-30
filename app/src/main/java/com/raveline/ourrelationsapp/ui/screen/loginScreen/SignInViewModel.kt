@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -31,8 +32,13 @@ class SignInViewModel @Inject constructor(
     private val _userState = MutableStateFlow<UserDataModel?>(UserDataModel())
     val userState = _userState.asStateFlow()
 
-    val firebaseAuthentication = useCaseModel.firebaseAuth
-    val fireStoreDatabase = useCaseModel.fireStore
+    private val firebaseAuthentication = useCaseModel.firebaseAuth
+    private val fireStoreDatabase = useCaseModel.fireStore
+
+    private val _uiState = MutableStateFlow<SignInUiState>(
+        SignInUiState.Default
+    )
+    val uiState = _uiState.asStateFlow()
 
     fun onSignIn(email: String, password: String) {
         if (email.isEmpty() or password.isEmpty()) {
@@ -47,7 +53,6 @@ class SignInViewModel @Inject constructor(
                 useCaseModel.signInUseCase.invoke(email.trim(), password.trim())
             if (signInComplete.first) {
                 isUserLoggedIn()
-                inProgress.value = false
             } else {
                 handleException(customMessage = signInComplete.second)
             }
@@ -72,11 +77,18 @@ class SignInViewModel @Inject constructor(
                             mUser = userModel!!
                             inProgress.value = false
                             it.tryResume(Pair(true, userModel))
+
+                            _uiState.update {
+                                SignInUiState.Success(userModel)
+                            }
                         }
                         it.cancel()
                     }
             } else {
                 inProgress.value = false
+                _uiState.update {
+                    SignInUiState.Default
+                }
                 it.resume(Pair(false, null))
                 it.cancel()
             }

@@ -3,7 +3,8 @@ package com.raveline.ourrelationsapp.ui.navigation.routes
 import android.app.Activity
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -14,7 +15,6 @@ import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.loginScreen.LoginScreen
 import com.raveline.ourrelationsapp.ui.screen.loginScreen.SignInViewModel
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 const val loginNavigationRoute = "login_route"
 
@@ -51,18 +51,20 @@ fun NavGraphBuilder.loginNavigationRoute(
     ) {
         val activity = LocalContext.current as Activity
         val viewModel: SignInViewModel = hiltViewModel()
-
-        LaunchedEffect(viewModel.userState) {
-            viewModel.userState.collect { user ->
-                if (user != null && user == mUser) {
-                    onNavigateToHome(viewModel.userState.value!!)
-                }
-            }
-        }
+        val uiState by viewModel.uiState.collectAsState()
+        /*
+                LaunchedEffect(viewModel.userState) {
+                    viewModel.userState.collect { user ->
+                        if (user != null && user == mUser) {
+                            onNavigateToHome(viewModel.userState.value!!)
+                        }
+                    }
+                }*/
 
         LoginScreen(
             activity = activity,
             viewModel = viewModel,
+            uiState = uiState,
             onNavigateToHome = onNavigateToHome,
             onNavigateToSignUp = onNavigateToSignUp
         ) {

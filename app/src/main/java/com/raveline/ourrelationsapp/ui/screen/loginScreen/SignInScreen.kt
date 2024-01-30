@@ -48,6 +48,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
+import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
+import com.raveline.ourrelationsapp.ui.common.components.FailureScreen
 import com.raveline.ourrelationsapp.ui.common.components.NotificationMessageLogin
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
@@ -63,16 +65,34 @@ fun LoginScreen(
     viewModel: SignInViewModel,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToSignUp: () -> Unit,
+    uiState: SignInUiState,
     content: @Composable () -> Unit
 ) {
-    LoginScreenContent(
-        getVideoUri(activity),
-        viewModel = viewModel,
-        onNavigateToHome = onNavigateToHome,
-        onNavigateToSignUp = onNavigateToSignUp,
-        content = content
-    )
 
+    when (uiState) {
+        is SignInUiState.Loading -> {
+            CommonProgressSpinner()
+        }
+
+        is SignInUiState.Failure -> {
+            val message = uiState.message
+            FailureScreen(message = message)
+        }
+
+        is SignInUiState.Default -> {
+            LoginScreenContent(
+                getVideoUri(activity),
+                viewModel = viewModel,
+                onNavigateToHome = onNavigateToHome,
+                onNavigateToSignUp = onNavigateToSignUp,
+                content = content
+            )
+        }
+
+        is SignInUiState.Success -> {
+            onNavigateToHome(uiState.user)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

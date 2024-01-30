@@ -20,16 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 import com.raveline.ourrelationsapp.ui.screen.loginScreen.SignInViewModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupState
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 
 @Composable
 fun CommonProgressSpinner(
     state: SignupState
 ) {
-    if (state.inProgress.value){
+    if (state.inProgress.value) {
         Box(
             modifier = Modifier
                 .alpha(0.5f)
@@ -44,6 +44,24 @@ fun CommonProgressSpinner(
                 strokeWidth = 6.dp
             )
         }
+    }
+}
+
+@Composable
+fun CommonProgressSpinner() {
+    Box(
+        modifier = Modifier
+            .alpha(0.5f)
+            .background(Color.LightGray)
+            .clickable(enabled = false) {}
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(100.dp),
+            color = Color.Black,
+            strokeWidth = 6.dp
+        )
     }
 }
 

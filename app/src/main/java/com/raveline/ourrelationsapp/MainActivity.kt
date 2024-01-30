@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     )
                 } else {
                     systemUiController.setSystemBarsColor(
-                        color = Color.Transparent
+                        color = MaterialTheme.colorScheme.primaryContainer
                     )
                 }
 
