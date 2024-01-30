@@ -51,6 +51,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
+import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
+import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
 import com.raveline.ourrelationsapp.ui.common.components.NotificationMessageSignup
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
@@ -58,7 +60,7 @@ import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPlayer
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
-import com.raveline.ourrelationsapp.ui.viewmodel.SignupViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 const val signupNavigationRoute = "SignupRoute"
 
@@ -68,6 +70,7 @@ const val signupNavigationRoute = "SignupRoute"
 fun SignupScreen(
     activity: Activity,
     viewModel: SignupViewModel,
+    event: (SignupEvent) -> Unit,
     onNavigateToHome: (UserDataModel) -> Unit,
     onNavigateToLogin: () -> Unit,
     content: @Composable () -> Unit
@@ -106,14 +109,6 @@ fun SignupScreen(
     ) {
         onDispose {
             exoPlayer.release()
-        }
-    }
-
-    LaunchedEffect(viewModel.userState) {
-        viewModel.userState.collect { user ->
-            if (user != null && user != UserDataModel()) {
-                onNavigateToHome(viewModel.userState.value!!)
-            }
         }
     }
 
@@ -222,7 +217,14 @@ fun SignupScreen(
                     Button(
                         onClick = {
                             focusManager.clearFocus()
-                            viewModel.onSignup(userName, userEmail, userPassword)
+                            //viewModel.onSignup(userName, userEmail, userPassword)
+                            event(
+                                SignupEvent.SignupUser(
+                                    userName = userName,
+                                    email = userEmail,
+                                    password = userPassword
+                                )
+                            )
                         },
                         enabled = !isLoading.value,
                         modifier = Modifier.fillMaxWidth(),

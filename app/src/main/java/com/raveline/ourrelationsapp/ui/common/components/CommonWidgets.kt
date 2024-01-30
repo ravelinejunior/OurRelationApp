@@ -21,24 +21,29 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
-import com.raveline.ourrelationsapp.ui.viewmodel.SignInViewModel
-import com.raveline.ourrelationsapp.ui.viewmodel.SignupViewModel
+import com.raveline.ourrelationsapp.ui.screen.loginScreen.SignInViewModel
+import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupState
+import com.raveline.ourrelationsapp.ui.screen.signupScreen.SignupViewModel
 
 @Composable
-fun CommonProgressSpinner() {
-    Box(
-        modifier = Modifier
-            .alpha(0.5f)
-            .background(Color.LightGray)
-            .clickable(enabled = false) {}
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(100.dp),
-            color = Color.Black,
-            strokeWidth = 6.dp
-        )
+fun CommonProgressSpinner(
+    state: SignupState
+) {
+    if (state.inProgress.value){
+        Box(
+            modifier = Modifier
+                .alpha(0.5f)
+                .background(Color.LightGray)
+                .clickable(enabled = false) {}
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(100.dp),
+                color = Color.Black,
+                strokeWidth = 6.dp
+            )
+        }
     }
 }
 

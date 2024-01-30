@@ -33,13 +33,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.raveline.ourrelationsapp.ui.common.components.CommonDivider
-import com.raveline.ourrelationsapp.ui.common.components.CommonProgressSpinner
 import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsBottomAppBar
+import com.raveline.ourrelationsapp.ui.screen.profileScreen.components.ProfileHeader
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 @Composable
 fun ProfileScreen(
@@ -82,7 +83,7 @@ fun ProfileScreen(
             onLogout = {
 
             },
-            userData = UserDataModel()
+            userData = userData!!
         )
 
         OurRelationsBottomAppBar(
@@ -316,12 +317,10 @@ fun ProfileImage(imageUrl: String?, vm: AuthenticationViewModel) {
                     .size(100.dp)
             ) {
                 //  CommonImage(data = imageUrl)
+                ProfileHeader(urlImage = imageUrl, userName = mUser?.name)
             }
             Text(text = "Change profile picture")
         }
 
-        val isLoading = vm.inProgress.value
-        if (isLoading)
-            CommonProgressSpinner()
     }
 }

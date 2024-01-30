@@ -48,7 +48,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.raveline.ourrelationsapp.R
-import com.raveline.ourrelationsapp.ui.common.components.NotificationMessage
 import com.raveline.ourrelationsapp.ui.common.components.NotificationMessageLogin
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.InputType
@@ -56,8 +55,6 @@ import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.TextInput
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildExoPlayer
 import com.raveline.ourrelationsapp.ui.screen.signupScreen.components.buildPlayerView
 import com.raveline.ourrelationsapp.ui.theme.onPrimaryLight
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
-import com.raveline.ourrelationsapp.ui.viewmodel.SignInViewModel
 
 
 @Composable

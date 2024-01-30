@@ -13,7 +13,8 @@ import androidx.navigation.compose.composable
 import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.screen.loginScreen.LoginScreen
-import com.raveline.ourrelationsapp.ui.viewmodel.SignInViewModel
+import com.raveline.ourrelationsapp.ui.screen.loginScreen.SignInViewModel
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 const val loginNavigationRoute = "login_route"
 
@@ -53,7 +54,7 @@ fun NavGraphBuilder.loginNavigationRoute(
 
         LaunchedEffect(viewModel.userState) {
             viewModel.userState.collect { user ->
-                if (user != null && user != UserDataModel()) {
+                if (user != null && user == mUser) {
                     onNavigateToHome(viewModel.userState.value!!)
                 }
             }
