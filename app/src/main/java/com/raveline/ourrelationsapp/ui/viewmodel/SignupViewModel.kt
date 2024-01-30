@@ -16,14 +16,14 @@ import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.Authentica
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
@@ -70,10 +70,11 @@ class SignupViewModel @Inject constructor(
 
     }
 
+    @OptIn(InternalCoroutinesApi::class)
     private fun isUserLoggedIn() = viewModelScope.launch(Dispatchers.Main) {
         val firebaseAuthentication = useCaseModel.firebaseAuth
         val fireStoreDatabase = useCaseModel.fireStore
-        suspendCoroutine<Pair<Boolean, UserDataModel?>> {
+        suspendCancellableCoroutine<Pair<Boolean, UserDataModel?>> {
             if (firebaseAuthentication.currentUser != null) {
                 fireStoreDatabase.collection(userFirebaseDatabaseCollection)
                     .document(firebaseAuthentication.currentUser?.uid.toString())
@@ -85,14 +86,15 @@ class SignupViewModel @Inject constructor(
                             val userModel = value.toObject<UserDataModel>()
                             _userState.value = userModel
                             mUser = userModel!!
-
-                            it.resume(Pair(true, userModel))
                             inProgress.value = false
+                            it.tryResume(Pair(true, userModel))
                         }
+                        it.cancel()
                     }
             } else {
                 inProgress.value = false
                 it.resume(Pair(false, null))
+                it.cancel()
             }
         }
 

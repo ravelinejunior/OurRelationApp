@@ -12,12 +12,13 @@ import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.Authentica
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
@@ -55,8 +56,9 @@ class SignInViewModel @Inject constructor(
     }
 
 
+    @OptIn(InternalCoroutinesApi::class)
     fun isUserLoggedIn() = viewModelScope.launch(Dispatchers.Main) {
-        suspendCoroutine<Pair<Boolean, UserDataModel?>> {
+        suspendCancellableCoroutine<Pair<Boolean, UserDataModel?>> {
             if (firebaseAuthentication.currentUser != null) {
                 fireStoreDatabase.collection(userFirebaseDatabaseCollection)
                     .document(firebaseAuthentication.currentUser?.uid.toString())
@@ -69,12 +71,14 @@ class SignInViewModel @Inject constructor(
                             _userState.value = userModel
                             mUser = userModel!!
                             inProgress.value = false
-                            it.resume(Pair(true, userModel))
+                            it.tryResume(Pair(true, userModel))
                         }
+                        it.cancel()
                     }
             } else {
                 inProgress.value = false
                 it.resume(Pair(false, null))
+                it.cancel()
             }
         }
 
