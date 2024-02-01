@@ -52,14 +52,6 @@ fun NavGraphBuilder.loginNavigationRoute(
         val activity = LocalContext.current as Activity
         val viewModel: SignInViewModel = hiltViewModel()
         val uiState by viewModel.uiState.collectAsState()
-        /*
-                LaunchedEffect(viewModel.userState) {
-                    viewModel.userState.collect { user ->
-                        if (user != null && user == mUser) {
-                            onNavigateToHome(viewModel.userState.value!!)
-                        }
-                    }
-                }*/
 
         LoginScreen(
             activity = activity,

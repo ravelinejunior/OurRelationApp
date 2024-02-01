@@ -12,19 +12,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.raveline.ourrelationsapp.ui.navigation.graph.NewsNavigator
 import com.raveline.ourrelationsapp.ui.screen.swipeScreen.SwipeScreen
 import com.raveline.ourrelationsapp.ui.theme.OurRelationsAppTheme
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 private val TAG: String = MainActivity::class.java.simpleName
@@ -55,8 +49,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel = viewModel(modelClass = AuthenticationViewModel::class.java)
-                    OurRelationsApp(viewModel = viewModel)
+                    OurRelationsApp()
                 }
             }
         }
@@ -64,14 +57,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun OurRelationsApp(
-    navController: NavHostController = rememberNavController(),
-    viewModel: AuthenticationViewModel
-) {
+fun OurRelationsApp() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        NewsNavigator(
-            viewModel
-        )
+        NewsNavigator()
     }
     /* // See the change in navigation
      LaunchedEffect(Unit) {

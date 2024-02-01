@@ -30,7 +30,6 @@ import com.raveline.ourrelationsapp.ui.navigation.routes.signupNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.splashNavigationRoute
 import com.raveline.ourrelationsapp.ui.navigation.routes.swipeNavigationRoute
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsBottomAppBar
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
 
 
@@ -53,7 +52,7 @@ private val TAG: String = "TAGAppNavigator"
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NewsNavigator(viewModel: AuthenticationViewModel) {
+fun NewsNavigator() {
     val navController = rememberNavController()
     // See the change in navigation
     LaunchedEffect(Unit) {
