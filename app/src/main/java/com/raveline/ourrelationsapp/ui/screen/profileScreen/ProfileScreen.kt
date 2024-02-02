@@ -18,7 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,33 +26,44 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.raveline.ourrelationsapp.ui.common.components.CommonDivider
+import com.raveline.ourrelationsapp.ui.common.components.CommonProgress
 import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.navigation.routes.OurRelationsAppBarItem
 import com.raveline.ourrelationsapp.ui.navigation.routes.bottomAppBarItems
+import com.raveline.ourrelationsapp.ui.navigation.routes.navigateToIntroProfile
 import com.raveline.ourrelationsapp.ui.screen.components.OurRelationsBottomAppBar
 import com.raveline.ourrelationsapp.ui.screen.profileScreen.components.ProfileHeader
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel.Companion.mUser
+import kotlinx.coroutines.launch
+
+var selectedImageUri: Uri? = null
 
 @Composable
 fun ProfileScreen(
+    navController: NavController,
     vm: AuthenticationViewModel,
     userData: UserDataModel?
 ) {
+    val scope = rememberCoroutineScope()
     val g = if (userData?.gender.isNullOrEmpty()) GenderEnum.OTHER.name
     else userData!!.gender!!.uppercase()
     val gPref = if (userData?.genderPreference.isNullOrEmpty()) "FEMALE"
     else userData!!.genderPreference!!.uppercase()
     var name by rememberSaveable { mutableStateOf(userData?.name ?: "") }
-    var username by rememberSaveable { mutableStateOf(userData?.userName ?: "") }
+    var userName by rememberSaveable { mutableStateOf(userData?.userName ?: "") }
     var bio by rememberSaveable { mutableStateOf(userData?.bio ?: "") }
     var gender by rememberSaveable { mutableStateOf(GenderEnum.valueOf(g)) }
     var genderPreference by rememberSaveable { mutableStateOf(GenderEnum.valueOf(gPref)) }
@@ -60,31 +71,57 @@ fun ProfileScreen(
     val scrollState = rememberScrollState()
 
     Column {
-        ProfileContent(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-                .padding(8.dp),
-            vm = vm,
-            name = name,
-            username = username,
-            bio = bio,
-            gender = gender,
-            genderPreference = genderPreference,
-            onNameChange = { name = it },
-            onUsernameChange = { username = it },
-            onBioChange = { bio = it },
-            onGenderChange = { gender = it },
-            onGenderPreferenceChange = { genderPreference = it },
-            onSave = {
-            },
-            onBack = {
-            },
-            onLogout = {
+        Box {
+            CommonProgress(viewModel = vm)
+            ProfileContent(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(8.dp),
+                vm = vm,
+                name = name,
+                username = userName,
+                bio = bio,
+                gender = gender,
+                genderPreference = genderPreference,
+                onNameChange = { name = it },
+                onUsernameChange = { userName = it },
+                onBioChange = { bio = it },
+                onGenderChange = { gender = it },
+                onGenderPreferenceChange = { genderPreference = it },
+                onSave = {
+                    scope.launch {
+                        selectedImageUri?.let {
+                            vm.uploadProfileImage(uri = it, uid = userData?.userId.toString())
+                        }
+                        vm.createOrUpdateProfile(
+                            name = name,
+                            userName = userName,
+                            bio = bio,
+                            gender = gender,
+                            genderPreference = genderPreference,
+                            imageUrl = userData?.imageUrl
+                        )
 
-            },
-            userData = userData!!
-        )
+                        navController.navigateToIntroProfile(
+                            navOptions = navOptions {
+                                launchSingleTop = true
+                            },
+                            userData = mUser,
+                        )
+                    }
+                },
+                onBack = {
+                    navController.navigateToIntroProfile(
+                        navOptions {
+                            launchSingleTop = true
+                            launchSingleTop
+                        },
+                        userData = userData
+                    )
+                },
+                userData = userData!!
+            )
+        }
 
         OurRelationsBottomAppBar(
             selectedItem = OurRelationsAppBarItem.ProfileItemBar.position,
@@ -94,7 +131,6 @@ fun ProfileScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileContent(
     modifier: Modifier,
@@ -111,25 +147,31 @@ fun ProfileContent(
     onGenderPreferenceChange: (GenderEnum) -> Unit,
     onSave: () -> Unit,
     onBack: () -> Unit,
-    onLogout: () -> Unit,
     userData: UserDataModel,
 ) {
-    val imageUrl = userData.imageUrl
-
     Column(modifier = modifier) {
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Back", modifier = Modifier.clickable { onBack.invoke() })
-            Text(text = "Save", modifier = Modifier.clickable { onSave.invoke() })
+            Text(
+                text = "Back",
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable { onBack.invoke() })
+            Text(
+                text = "Save",
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable { onSave.invoke() })
         }
 
         CommonDivider()
 
-        ProfileImage(imageUrl = imageUrl, vm = vm)
+        ProfileImage(vm = vm)
 
         CommonDivider()
 
@@ -144,12 +186,14 @@ fun ProfileContent(
                 value = name,
                 onValueChange = onNameChange,
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
-                    focusedLabelColor = Color.Black,
+                    focusedLabelColor = MaterialTheme.colorScheme.onBackground,
                 ),
+                maxLines = 1,
+                singleLine = true
             )
         }
 
@@ -164,12 +208,14 @@ fun ProfileContent(
                 value = username,
                 onValueChange = onUsernameChange,
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
-                    focusedLabelColor = Color.Black,
+                    focusedLabelColor = MaterialTheme.colorScheme.onBackground,
                 ),
+                singleLine = true,
+                maxLines = 1
             )
         }
 
@@ -186,11 +232,11 @@ fun ProfileContent(
                 modifier = Modifier
                     .height(150.dp),
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
-                    focusedLabelColor = Color.Black,
+                    focusedLabelColor = MaterialTheme.colorScheme.onBackground,
                 ),
                 singleLine = false
             )
@@ -228,6 +274,16 @@ fun ProfileContent(
                             .padding(4.dp)
                             .clickable { onGenderChange(GenderEnum.FEMALE) })
                 }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = gender == GenderEnum.OTHER,
+                        onClick = { onGenderChange(GenderEnum.OTHER) })
+                    Text(
+                        text = "Other",
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .clickable { onGenderChange(GenderEnum.FEMALE) })
+                }
             }
         }
 
@@ -242,7 +298,8 @@ fun ProfileContent(
             Text(
                 text = "Looking for:", modifier = Modifier
                     .width(100.dp)
-                    .padding(8.dp)
+                    .padding(8.dp),
+                style = MaterialTheme.typography.titleMedium
             )
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -253,27 +310,34 @@ fun ProfileContent(
                         text = "Men",
                         modifier = Modifier
                             .padding(4.dp)
-                            .clickable { onGenderPreferenceChange(GenderEnum.MALE) })
+                            .clickable { onGenderPreferenceChange(GenderEnum.MALE) },
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = genderPreference == GenderEnum.FEMALE,
-                        onClick = { onGenderPreferenceChange(GenderEnum.FEMALE) })
+                        onClick = { onGenderPreferenceChange(GenderEnum.FEMALE) },
+                    )
                     Text(
                         text = "Women",
                         modifier = Modifier
                             .padding(4.dp)
-                            .clickable { onGenderPreferenceChange(GenderEnum.FEMALE) })
+                            .clickable { onGenderPreferenceChange(GenderEnum.FEMALE) },
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(
                         selected = genderPreference == GenderEnum.OTHER,
                         onClick = { onGenderPreferenceChange(GenderEnum.OTHER) })
                     Text(
-                        text = "Any",
+                        text = "Other",
                         modifier = Modifier
                             .padding(4.dp)
-                            .clickable { onGenderPreferenceChange(GenderEnum.OTHER) })
+                            .clickable { onGenderPreferenceChange(GenderEnum.OTHER) },
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
         }
@@ -283,41 +347,53 @@ fun ProfileContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp)
+                .clickable { onSave.invoke() },
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "Logout", modifier = Modifier.clickable { onLogout.invoke() })
+            Text(
+                text = "Save",
+                modifier = Modifier
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center
+            )
         }
 
     }
 }
 
 @Composable
-fun ProfileImage(imageUrl: String?, vm: AuthenticationViewModel) {
+fun ProfileImage(vm: AuthenticationViewModel) {
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
-
+        uri?.let {
+            // Update the selected image URI in real-time
+            selectedImageUri = it
+            vm.uploadImageUI(it)
+        }
     }
 
     Box(modifier = Modifier.height(IntrinsicSize.Min)) {
+        CommonProgress(viewModel = vm)
         Column(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
                 .clickable {
-                    launcher.launch("image/*")
+                   // launcher.launch("image/*")
                 },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Card(
                 shape = CircleShape, modifier = Modifier
                     .padding(8.dp)
-                    .size(100.dp)
+                    .size(200.dp)
             ) {
                 //  CommonImage(data = imageUrl)
-                ProfileHeader(urlImage = imageUrl, userName = mUser?.name)
+                ProfileHeader(urlImage = mUser?.imageUrl, userName = mUser?.name)
             }
             Text(text = "Change profile picture")
         }

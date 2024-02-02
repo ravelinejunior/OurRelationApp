@@ -109,6 +109,7 @@ fun NavGraphBuilder.profileEditRoute(navController: NavController) {
             ProfileScreen(
                 vm = viewModel,
                 userData = it,
+                navController = navController
             )
         }
     }

@@ -1,17 +1,22 @@
 package com.raveline.ourrelationsapp.ui.domain.interfaces
 
+import android.net.Uri
+
 interface UserAuthenticationRepository {
     suspend fun signUpUser(userName: String, email: String, password: String): Pair<Boolean, String>
     suspend fun signInUser(email: String, password: String): Pair<Boolean, String>
     suspend fun createOrUpdateUser(
-        name: String? = null,
-        email: String? = null,
-        bio: String? = null,
-        imageUrl: String? = null,
-        encryptedPassword: String? = null,
-        gender: String? = null,
-        genderPreference: String? = null,
+        name: String? = "",
+        userName: String? = "",
+        email: String? = "",
+        bio: String? = "",
+        imageUrl: String? = "",
+        encryptedPassword: String? = "",
+        gender: String? = "",
+        genderPreference: String? = ""
     ): Pair<Boolean, String>
+
     suspend fun signOutUser()
+    suspend fun uploadUserImage(uri: Uri,userUid:String):Pair<Boolean,String>
 
 }

@@ -1,6 +1,11 @@
 package com.raveline.ourrelationsapp.ui.screen.profileScreen.components
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,18 +36,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.raveline.ourrelationsapp.R
+import com.raveline.ourrelationsapp.ui.screen.profileScreen.selectedImageUri
+import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
 import java.util.Locale
 
 @Composable
 fun ProfileHeader(
     urlImage: String?,
-    userName: String?
+    userName: String?,
+    mSize: Dp = 200.dp,
 ) {
+
+    val selectedImageResult: MutableState<Uri?> = remember {
+        mutableStateOf(null)
+    }
 
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -52,15 +68,22 @@ fun ProfileHeader(
         end = Offset(0f, 0f),
     )
 
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) {
+        selectedImageUri = it
+        selectedImageResult.value = it
+    }
+
     Column(
         modifier =
-            Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(200.dp)
+                .size(mSize)
                 .border(
                     width = 6.dp,
                     shape = RoundedCornerShape(100.dp),
@@ -78,16 +101,19 @@ fun ProfileHeader(
                         style = Stroke(width = 8.dp.toPx()),
                         cornerRadius = CornerRadius(100.dp.toPx(), 100.dp.toPx())
                     )
+                }
+                .clickable {
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
         ) {
             AsyncImage(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .size(200.dp - 12.dp) // Subtract border width to fit within the border
+                    .size(mSize - 12.dp) // Subtract border width to fit within the border
                     .clip(RoundedCornerShape(100.dp)),
                 model = ImageRequest
                     .Builder(context = LocalContext.current)
-                    .data(urlImage)
+                    .data(selectedImageResult.value?:urlImage)
                     .crossfade(true)
                     .allowHardware(true)
                     .memoryCachePolicy(CachePolicy.ENABLED)
@@ -121,6 +147,6 @@ fun ProfileHeader(
 fun ProfileHeaderPreview() {
     ProfileHeader(
         urlImage = null,
-        userName = "App name"
+        userName = "App name",
     )
 }

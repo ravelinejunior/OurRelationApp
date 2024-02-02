@@ -45,7 +45,7 @@ fun TextInput(
     focusRequester: FocusRequester? = null,
     keyboardActions: KeyboardActions,
     textValue: (String) -> Unit,
-    enabled:Boolean = true
+    enabled: Boolean = true,
 ) {
 
     var value by remember { mutableStateOf("") }
@@ -72,7 +72,7 @@ fun TextInput(
         singleLine = true,
         keyboardOptions = inputType.keyboardOptions,
         visualTransformation = inputType.visualTransformation,
-        keyboardActions = keyboardActions
+        keyboardActions = keyboardActions,
     )
 }
 
@@ -101,7 +101,7 @@ sealed class InputType(
         icon = Icons.Default.Lock,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.Text
         ),
         visualTransformation = PasswordVisualTransformation()
     )

@@ -1,13 +1,16 @@
 package com.raveline.ourrelationsapp.ui.data.repository_impl
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
 import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
 import com.raveline.ourrelationsapp.ui.common.utils.userNameFirebaseKey
 import com.raveline.ourrelationsapp.ui.domain.interfaces.UserAuthenticationRepository
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -15,6 +18,7 @@ import kotlin.coroutines.suspendCoroutine
 class UserAuthenticationRepositoryImpl @Inject constructor(
     private val firebaseAuthentication: FirebaseAuth,
     private val fireStoreDatabase: FirebaseFirestore,
+    private val firebaseStorage: FirebaseStorage
 ) : UserAuthenticationRepository {
     private val TAG: String = "UserAuthenticationRepositoryImpl"
 
@@ -78,6 +82,7 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun createOrUpdateUser(
         name: String?,
+        userName: String?,
         email: String?,
         bio: String?,
         imageUrl: String?,
@@ -89,7 +94,7 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
         val userData = UserDataModel(
             userId = uid,
             name = customCapitalize(name.toString()),
-            userName = customCapitalize(name.toString()),
+            userName = customCapitalize(userName.toString()),
             email = email,
             bio = bio,
             imageUrl = imageUrl,
@@ -168,6 +173,25 @@ class UserAuthenticationRepositoryImpl @Inject constructor(
     override suspend fun signOutUser() {
         firebaseAuthentication.signOut()
     }
+
+    override suspend fun uploadUserImage(uri: Uri, userUid: String): Pair<Boolean, String> =
+        suspendCancellableCoroutine { continuation ->
+            val storageRef = firebaseStorage.reference
+            val imageRef =
+                storageRef.child("Profile_Image/$userUid/${System.currentTimeMillis()}")
+
+            imageRef.putFile(uri)
+                .addOnSuccessListener { authTask ->
+                    val result = authTask.metadata?.reference?.downloadUrl
+                    result?.addOnCompleteListener {
+                        continuation.resume(Pair(true, it.result.toString()))
+                        continuation.cancel()
+                    }
+                }.addOnFailureListener { exception ->
+                    continuation.resume(Pair(false, exception.message.toString()))
+                    continuation.cancel(exception)
+                }
+        }
 }
 
 

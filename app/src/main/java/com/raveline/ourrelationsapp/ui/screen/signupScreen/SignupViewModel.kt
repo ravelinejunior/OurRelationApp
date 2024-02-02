@@ -75,39 +75,7 @@ class SignupViewModel @Inject constructor(
                 val encrypt = encryptString(password, encryptionKey)
                 val userStored = createOrUpdateProfile(
                     name = userName,
-                    email = email,
-                    password = encrypt,
-                )
-
-                if (userStored.first) {
-                    isUserLoggedIn()
-                } else {
-                    handleException(customMessage = userStored.second)
-                }
-            } else {
-                handleException(customMessage = singUpUserComplete.second)
-            }
-        }
-
-    }
-
-    fun onSignup(userName: String, email: String, password: String) {
-        if (userName.isEmpty() or email.isEmpty() or password.isEmpty()) {
-            handleException(customMessage = "All fields must be filled!")
-            return
-        }
-        inProgress.value = true
-        viewModelScope.launch {
-            val singUpUserComplete =
-                useCaseModel.signUpUseCase.invoke(
-                    customCapitalize(userName),
-                    email,
-                    password
-                )
-            if (singUpUserComplete.first) {
-                val encrypt = encryptString(password, encryptionKey)
-                val userStored = createOrUpdateProfile(
-                    name = userName,
+                    userName = userName,
                     email = email,
                     password = encrypt,
                 )
@@ -159,15 +127,23 @@ class SignupViewModel @Inject constructor(
     private suspend fun createOrUpdateProfile(
         name: String,
         email: String,
-        bio: String? = null,
-        imageUrl: String? = null,
+        userName: String? = "",
+        bio: String? = "",
+        imageUrl: String? = "",
         password: String,
         gender: GenderEnum? = null,
-        genderPreference: String? = null,
+        genderPreference: String? = "",
     ): Pair<Boolean, String> {
         val encryptedPassword = encryptString(password, encryptionKey)
         val result = useCaseModel.createOrUpdateUserUseCase.invoke(
-            name, email, bio, imageUrl, encryptedPassword, gender?.name, genderPreference
+            name = name,
+            email = email,
+            userName = userName,
+            bio = bio,
+            imageUrl = imageUrl,
+            encryptedPassword = encryptedPassword,
+            gender = gender?.name,
+            genderPreference = genderPreference
         )
         return viewModelScope.async {
             result

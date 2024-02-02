@@ -60,6 +60,7 @@ fun NavGraphBuilder.profileNavigationRoute(
             ProfileScreen(
                 vm = viewModel,
                 userData = it,
+                navController = navController
             )
         }
     }

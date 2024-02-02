@@ -24,8 +24,8 @@ data class UserDataModel(
         "email" to email,
         "password" to password,
         "bio" to bio,
-        "gender" to bio,
-        "genderPreference" to bio,
+        "gender" to gender,
+        "genderPreference" to genderPreference,
     )
 }
 

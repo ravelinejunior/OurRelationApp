@@ -36,9 +36,12 @@ object RemoteModule {
     @Singleton
     fun provideAuthRepository(
         firebaseAuthentication: FirebaseAuth,
-        fireStoreDatabase: FirebaseFirestore
+        fireStoreDatabase: FirebaseFirestore,
+        firebaseStorage: FirebaseStorage,
     ): UserAuthenticationRepository = UserAuthenticationRepositoryImpl(
-        firebaseAuthentication, fireStoreDatabase
+        firebaseAuthentication = firebaseAuthentication,
+        fireStoreDatabase = fireStoreDatabase,
+        firebaseStorage = firebaseStorage
     )
 
     @Provides

@@ -1,10 +1,13 @@
 package com.raveline.ourrelationsapp.ui.viewmodel
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.toObject
 import com.raveline.ourrelationsapp.ui.common.utils.userFirebaseDatabaseCollection
+import com.raveline.ourrelationsapp.ui.domain.models.GenderEnum
 import com.raveline.ourrelationsapp.ui.domain.models.UserDataModel
 import com.raveline.ourrelationsapp.ui.domain.state.StateEvent
 import com.raveline.ourrelationsapp.ui.domain.use_case.authentication.AuthenticationUseCaseModel
@@ -16,7 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.internal.wait
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
@@ -68,6 +70,76 @@ class AuthenticationViewModel @Inject constructor(
 
     }
 
+    suspend fun createOrUpdateProfile(
+        name: String? = null,
+        userName: String? = null,
+        bio: String? = null,
+        imageUrl: String? = null,
+        gender: GenderEnum? = null,
+        genderPreference: GenderEnum? = null,
+    ) {
+        inProgress.value = true
+        authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
+            name = name,
+            userName = userName,
+            email = mUser?.email,
+            bio = bio,
+            imageUrl = imageUrl,
+            encryptedPassword = mUser?.password,
+            gender = gender?.name,
+            genderPreference = genderPreference?.name
+        )
+
+        mUser = mUser?.copy(
+            name = name,
+            userName = userName,
+            bio = bio,
+            imageUrl = imageUrl,
+            gender = gender?.name,
+            genderPreference = genderPreference?.name
+        )
+
+        _userState.value = mUser
+        delay(1000)
+        inProgress.value = false
+    }
+
+    fun uploadImageUI(uri: Uri) = viewModelScope.launch {
+        inProgress.value = true
+        delay(500L)
+        _userState.value = userState.value?.copy(imageUrl = uri.toString())
+        mUser = userState.value
+        inProgress.value = false
+    }
+
+    fun uploadProfileImage(uri: Uri, uid: String) = viewModelScope.launch {
+        inProgress.value = true
+        val user = userState.value!!
+
+        viewModelScope.launch {
+            val result = authenticationUseCaseModel.createOrUpdateUserUseCase.invoke(
+                uri = uri,
+                userUid = uid
+            )
+
+            if (result.first) {
+                createOrUpdateProfile(
+                    name = user.name,
+                    userName = user.userName,
+                    bio = user.bio,
+                    gender = GenderEnum.valueOf(user.gender.toString()),
+                    genderPreference = GenderEnum.valueOf(user.genderPreference.toString()),
+                    imageUrl = result.second
+                )
+            } else {
+                handleException(customMessage = result.second)
+            }
+
+            inProgress.value = false
+
+        }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             authenticationUseCaseModel.signInUseCase.invoke()
@@ -75,6 +147,15 @@ class AuthenticationViewModel @Inject constructor(
             _userState.value = null
             mUser = null
         }
+    }
+
+    private fun handleException(exception: Exception? = null, customMessage: String = "") {
+        Log.e(TAG, "Handle Exception ${exception?.message}", exception)
+        exception?.stackTrace
+        val errorMessage = exception?.localizedMessage ?: ""
+        val message = if (customMessage.isEmpty()) errorMessage else "$customMessage: $errorMessage"
+        popUpNotification.value = StateEvent(message)
+        inProgress.value = false
     }
 
     companion object {
