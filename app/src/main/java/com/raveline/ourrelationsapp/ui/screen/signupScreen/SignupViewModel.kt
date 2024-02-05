@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.toObject
 import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
 import com.raveline.ourrelationsapp.ui.common.utils.encryptString
@@ -33,12 +34,17 @@ class SignupViewModel @Inject constructor(
     private val TAG: String = SignupViewModel::class.java.simpleName
     val popUpNotification = mutableStateOf<StateEvent<String>?>(StateEvent(""))
     val inProgress = mutableStateOf(false)
+    val inProgressMatches = mutableStateOf(false)
 
     private val _userState = MutableStateFlow<UserDataModel?>(UserDataModel())
     val userState = _userState.asStateFlow()
 
     private val _signupState = mutableStateOf(SignupState())
     val signupState: State<SignupState> = _signupState
+
+    private val fireStoreDatabase = useCaseModel.fireStore
+
+    val matchProfiles = mutableStateOf<List<UserDataModel>>(emptyList())
 
     fun onSignupEvent(event: SignupEvent) {
         when (event) {
@@ -74,13 +80,13 @@ class SignupViewModel @Inject constructor(
             if (singUpUserComplete.first) {
                 val encrypt = encryptString(password, encryptionKey)
                 val userStored = createOrUpdateProfile(
-                    name = userName,
                     userName = userName,
                     email = email,
                     password = encrypt,
                 )
 
                 if (userStored.first) {
+                    populateMatchesCards()
                     isUserLoggedIn()
                 } else {
                     handleException(customMessage = userStored.second)
@@ -125,7 +131,7 @@ class SignupViewModel @Inject constructor(
     }
 
     private suspend fun createOrUpdateProfile(
-        name: String,
+        name: String = "",
         email: String,
         userName: String? = "",
         bio: String? = "",
@@ -148,6 +154,70 @@ class SignupViewModel @Inject constructor(
         return viewModelScope.async {
             result
         }.await()
+    }
+
+    private fun populateMatchesCards() {
+        inProgressMatches.value = true
+
+        val gender = if (userState.value?.gender.isNullOrEmpty()) GenderEnum.OTHER.name
+        else userState.value!!.gender!!.uppercase()
+
+        val genderPref =
+            if (userState.value?.genderPreference.isNullOrEmpty()) GenderEnum.OTHER.name
+            else userState.value!!.genderPreference!!.uppercase()
+
+        val cardsQuery = when (GenderEnum.valueOf(genderPref)) {
+            GenderEnum.MALE -> fireStoreDatabase.collection(userFirebaseDatabaseCollection)
+                .whereEqualTo("gender", GenderEnum.MALE)
+
+            GenderEnum.FEMALE -> fireStoreDatabase.collection(userFirebaseDatabaseCollection)
+                .whereEqualTo("gender", GenderEnum.FEMALE)
+
+            GenderEnum.OTHER -> fireStoreDatabase.collection(userFirebaseDatabaseCollection)
+
+        }
+
+        val userGender = GenderEnum.valueOf(gender)
+
+        cardsQuery.where(
+            Filter.and(
+                Filter.notEqualTo("userId", userState.value?.userId),
+                Filter.or(
+                    Filter.equalTo("genderPreference", userGender),
+                    Filter.equalTo("genderPreference", GenderEnum.OTHER)
+                )
+            )
+        ).addSnapshotListener { value, error ->
+            if (error != null) {
+                inProgressMatches.value = false
+                handleException(error)
+            }
+
+            if (value != null) {
+                val potentialMatches = mutableListOf<UserDataModel>()
+                value.documents.forEach { document ->
+                    document.toObject<UserDataModel>()?.let { potentialMatch ->
+                        var showUser = true
+
+                        if (userState.value?.swipesLeft?.contains(potentialMatch.userId) == true ||
+                            userState.value?.swipesRight?.contains(potentialMatch.userId) == true ||
+                            userState.value?.matches?.contains(potentialMatch.userId) == true
+                        ) {
+                            showUser = false
+                        }
+
+                        if (showUser) {
+                            potentialMatches.add(potentialMatch)
+                        }
+                    }
+                }
+
+                matchProfiles.value = potentialMatches
+                inProgressMatches.value = false
+            }
+
+
+        }
     }
 
     private fun handleException(exception: Exception? = null, customMessage: String = "") {

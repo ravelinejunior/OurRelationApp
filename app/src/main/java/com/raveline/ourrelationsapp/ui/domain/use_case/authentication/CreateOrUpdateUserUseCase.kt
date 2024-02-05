@@ -13,7 +13,10 @@ class CreateOrUpdateUserUseCase @Inject constructor(private val repository: User
         imageUrl: String? = "",
         encryptedPassword: String? = "",
         gender: String? = "",
-        genderPreference: String? = ""
+        genderPreference: String? = "",
+        swipesLeft: List<String>? = emptyList(),
+        swipesRight: List<String>? = emptyList(),
+        matches: List<String>? = emptyList(),
     ): Pair<Boolean, String> {
         return repository.createOrUpdateUser(
             name = name,
@@ -23,7 +26,10 @@ class CreateOrUpdateUserUseCase @Inject constructor(private val repository: User
             imageUrl = imageUrl,
             encryptedPassword = encryptedPassword,
             gender = gender,
-            genderPreference = genderPreference
+            genderPreference = genderPreference,
+            swipesLeft = swipesLeft,
+            swipesRight = swipesRight,
+            matches = matches
         )
     }
 

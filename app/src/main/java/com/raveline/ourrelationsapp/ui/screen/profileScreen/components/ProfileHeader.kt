@@ -42,15 +42,15 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.raveline.ourrelationsapp.R
+import com.raveline.ourrelationsapp.ui.common.utils.customCapitalize
 import com.raveline.ourrelationsapp.ui.screen.profileScreen.selectedImageUri
-import com.raveline.ourrelationsapp.ui.viewmodel.AuthenticationViewModel
-import java.util.Locale
 
 @Composable
 fun ProfileHeader(
     urlImage: String?,
     userName: String?,
     mSize: Dp = 200.dp,
+    enabled: Boolean = false
 ) {
 
     val selectedImageResult: MutableState<Uri?> = remember {
@@ -102,7 +102,7 @@ fun ProfileHeader(
                         cornerRadius = CornerRadius(100.dp.toPx(), 100.dp.toPx())
                     )
                 }
-                .clickable {
+                .clickable(enabled = enabled) {
                     launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
         ) {
@@ -113,7 +113,7 @@ fun ProfileHeader(
                     .clip(RoundedCornerShape(100.dp)),
                 model = ImageRequest
                     .Builder(context = LocalContext.current)
-                    .data(selectedImageResult.value?:urlImage)
+                    .data(selectedImageResult.value ?: urlImage)
                     .crossfade(true)
                     .allowHardware(true)
                     .memoryCachePolicy(CachePolicy.ENABLED)
@@ -127,11 +127,7 @@ fun ProfileHeader(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = userName?.replaceFirstChar {
-                if (it.isLowerCase()) it.titlecase(Locale.getDefault())
-                else it.toString()
-            }
-                .toString(),
+            text = customCapitalize(userName.toString()),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif

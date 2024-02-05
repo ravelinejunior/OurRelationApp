@@ -14,8 +14,10 @@ data class UserDataModel(
     var bio: String? = "",
     var gender: String? = "",
     var genderPreference: String? = "",
-
-    ):Parcelable {
+    var swipesLeft: List<String>? = emptyList(),
+    var swipesRight: List<String>? = emptyList(),
+    var matches: List<String>? = emptyList(),
+) : Parcelable {
     fun toMap() = mapOf(
         "userId" to userId,
         "name" to name,
@@ -26,9 +28,12 @@ data class UserDataModel(
         "bio" to bio,
         "gender" to gender,
         "genderPreference" to genderPreference,
+        "swipesLeft" to swipesLeft,
+        "swipesRight" to swipesRight,
+        "matches" to matches,
     )
 }
 
-enum class GenderEnum{
+enum class GenderEnum {
     MALE, FEMALE, OTHER
 }

@@ -1,8 +1,6 @@
 package com.raveline.ourrelationsapp.ui.screen.profileScreen
 
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -91,7 +89,15 @@ fun ProfileScreen(
                 onSave = {
                     scope.launch {
                         selectedImageUri?.let {
-                            vm.uploadProfileImage(uri = it, uid = userData?.userId.toString())
+                            vm.uploadProfileImage(
+                                uri = it,
+                                uid = userData?.userId.toString(),
+                                name = name,
+                                userName = userName,
+                                bio = bio,
+                                gender = gender.name,
+                                genderPreference = genderPreference.name
+                            )
                         }
                         vm.createOrUpdateProfile(
                             name = name,
@@ -119,7 +125,6 @@ fun ProfileScreen(
                         userData = userData
                     )
                 },
-                userData = userData!!
             )
         }
 
@@ -147,7 +152,6 @@ fun ProfileContent(
     onGenderPreferenceChange: (GenderEnum) -> Unit,
     onSave: () -> Unit,
     onBack: () -> Unit,
-    userData: UserDataModel,
 ) {
     Column(modifier = modifier) {
 
@@ -366,16 +370,6 @@ fun ProfileContent(
 @Composable
 fun ProfileImage(vm: AuthenticationViewModel) {
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri: Uri? ->
-        uri?.let {
-            // Update the selected image URI in real-time
-            selectedImageUri = it
-            vm.uploadImageUI(it)
-        }
-    }
-
     Box(modifier = Modifier.height(IntrinsicSize.Min)) {
         CommonProgress(viewModel = vm)
         Column(
@@ -383,7 +377,7 @@ fun ProfileImage(vm: AuthenticationViewModel) {
                 .padding(8.dp)
                 .fillMaxWidth()
                 .clickable {
-                   // launcher.launch("image/*")
+                    // launcher.launch("image/*")
                 },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -393,7 +387,12 @@ fun ProfileImage(vm: AuthenticationViewModel) {
                     .size(200.dp)
             ) {
                 //  CommonImage(data = imageUrl)
-                ProfileHeader(urlImage = mUser?.imageUrl, userName = mUser?.name)
+                ProfileHeader(
+                    urlImage = mUser?.imageUrl,
+                    userName = mUser?.name,
+                    mSize = 200.dp,
+                    enabled = true
+                )
             }
             Text(text = "Change profile picture")
         }

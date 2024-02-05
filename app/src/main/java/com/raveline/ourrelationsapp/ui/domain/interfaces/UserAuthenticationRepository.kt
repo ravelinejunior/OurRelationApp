@@ -13,10 +13,12 @@ interface UserAuthenticationRepository {
         imageUrl: String? = "",
         encryptedPassword: String? = "",
         gender: String? = "",
-        genderPreference: String? = ""
+        genderPreference: String? = "",
+        swipesLeft: List<String>? = emptyList(),
+        swipesRight: List<String>? = emptyList(),
+        matches: List<String>? = emptyList(),
     ): Pair<Boolean, String>
 
     suspend fun signOutUser()
-    suspend fun uploadUserImage(uri: Uri,userUid:String):Pair<Boolean,String>
-
+    suspend fun uploadUserImage(uri: Uri, userUid: String): Pair<Boolean, String>
 }
